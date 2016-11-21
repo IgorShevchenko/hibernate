@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.2.3.Final</version>
+			<version>5.2.4.Final</version>
 		</dependency>
 
 		<dependency>
@@ -28,27 +28,14 @@
 			<version>6.0.5</version>
 		</dependency>
 
-		<!-- In JavaSE use a JTA transaction manager as a JDBC connection pool -->
+		<!-- JTA transaction manager as a JDBC connection pool -->
 		<dependency>
 			<groupId>org.codehaus.btm</groupId>
 			<artifactId>btm</artifactId>
 			<version>2.1.4</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.slf4j</groupId> -->
-		<!-- <artifactId>slf4j-api</artifactId> -->
-		<!-- <version>1.7.21</version> -->
-		<!-- </dependency> -->
-
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.21</version>
-		</dependency>
-
+		<!-- JUnit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

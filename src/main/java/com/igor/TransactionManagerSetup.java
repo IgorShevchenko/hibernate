@@ -29,8 +29,8 @@ public class TransactionManagerSetup {
 	public TransactionManagerSetup(DatabaseProduct databaseProduct, String connectionURL) throws NamingException {
 
 		Logger rootLog = Logger.getLogger("");
-		rootLog.setLevel( Level.FINE );
-		rootLog.getHandlers()[0].setLevel( Level.FINE ); // Default console handler
+		rootLog.setLevel(Level.FINE);
+		rootLog.getHandlers()[0].setLevel(Level.FINE); // Default console handler
 
 		LOGGER.fine("Starting database connection pool");
 
