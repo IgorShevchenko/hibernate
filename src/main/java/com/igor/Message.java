@@ -1,4 +1,4 @@
-package book;
+package com.igor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

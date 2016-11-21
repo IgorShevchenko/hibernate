@@ -1,4 +1,4 @@
-package book;
+package com.igor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

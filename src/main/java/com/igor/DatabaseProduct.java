@@ -1,4 +1,4 @@
-package book;
+package com.igor;
 
 import bitronix.tm.resource.jdbc.PoolingDataSource;
 

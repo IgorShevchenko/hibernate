@@ -1,4 +1,4 @@
-package book;
+package com.igor;
 
 import java.util.List;
 
