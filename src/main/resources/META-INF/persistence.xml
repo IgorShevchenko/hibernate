@@ -17,7 +17,7 @@
 		
 		<!-- A persistent unit has persistent (mapped) classes, 
 			 you list them here. -->
-        <class>book.Message</class>
+        <class>com.igor.Message</class>
 		
 		<!-- Hibernate can scan your classpath for mapped classes and 
 		     add them automatically to your persistence unit. 
