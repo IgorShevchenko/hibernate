@@ -1,19 +1,24 @@
 package com.igor;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
 
+import com.igor.entity.Message;
+import com.igor.setup.PersistenceUnit;
 import com.igor.setup.TransactionManager;
 
 public class App {
 
 	public static void main(String[] args) throws Exception {
 
+		System.out.println(Arrays.toString(args));
+
 		TransactionManager TM = TransactionManager.getInstance();
-		EntityManagerFactory emf = TransactionManager.createEntityManagerFactory();
+		EntityManagerFactory emf = PersistenceUnit.createEntityManagerFactory();
 
 		try {
 			saveMessage(TM, emf);

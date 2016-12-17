@@ -1,4 +1,4 @@
-package com.igor;
+package com.igor.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

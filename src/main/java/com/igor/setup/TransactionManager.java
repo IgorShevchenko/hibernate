@@ -1,40 +1,38 @@
 package com.igor.setup;
 
-import java.util.logging.Logger;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.sql.DataSource;
 import javax.transaction.Status;
 import javax.transaction.UserTransaction;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 public class TransactionManager {
 
-	private static final Logger LOGGER = Logger.getLogger(TransactionManager.class.getName());
+	private static final String SERVER_ID = "myServer1234";
+	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionManager.class);
 	private static final TransactionManager INSTANCE = new TransactionManager();
+
+	public static TransactionManager getInstance() {
+		return INSTANCE;
+	}
 
 	private final Context context;
 	private final PoolingDataSource ds;
 
 	private TransactionManager() {
 
-		Context t = null;
-		try {
-			t = new InitialContext();
-		} catch (NamingException e) {
-			throw new RuntimeException(e);
-		}
-		this.context = t;
+		this.context = createInitialContext();
 
 		LOGGER.info("Starting database connection pool");
 		LOGGER.info("Setting stable unique identifier for transaction recovery");
-		TransactionManagerServices.getConfiguration().setServerId(PersistenceConst.SERVER_ID);
+		TransactionManagerServices.getConfiguration().setServerId(SERVER_ID);
 
 		LOGGER.info("Disabling JMX binding of manager in unit tests");
 		TransactionManagerServices.getConfiguration().setDisableJmx(true);
@@ -47,7 +45,7 @@ public class TransactionManager {
 
 		LOGGER.info("Creating connection pool");
 		this.ds = new PoolingDataSource();
-		this.ds.setUniqueName(PersistenceConst.JTA_DATA_SOURCE);
+		this.ds.setUniqueName(PersistenceUnit.JTA_DATA_SOURCE);
 		this.ds.setMinPoolSize(1);
 		this.ds.setMaxPoolSize(5);
 		this.ds.setPreparedStatementCacheSize(10);
@@ -68,12 +66,12 @@ public class TransactionManager {
 		this.ds.init();
 	}
 
-	public static TransactionManager getInstance() {
-		return INSTANCE;
-	}
-
-	public static EntityManagerFactory createEntityManagerFactory() {
-		return Persistence.createEntityManagerFactory(PersistenceConst.PERSISTENCE_UNIT_NAME);
+	private static InitialContext createInitialContext() {
+		try {
+			return new InitialContext();
+		} catch (NamingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public UserTransaction getUserTransaction() {
@@ -86,7 +84,7 @@ public class TransactionManager {
 
 	public DataSource getDataSource() {
 		try {
-			return (DataSource) this.context.lookup(PersistenceConst.JTA_DATA_SOURCE);
+			return (DataSource) this.context.lookup(PersistenceUnit.JTA_DATA_SOURCE);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
@@ -104,7 +102,7 @@ public class TransactionManager {
 	}
 
 	public void stop() throws Exception {
-		LOGGER.fine("Stopping database connection pool");
+		LOGGER.trace("Stopping database connection pool");
 		this.ds.close();
 		TransactionManagerServices.getTransactionManager().shutdown();
 	}

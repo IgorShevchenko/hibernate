@@ -15,9 +15,8 @@
 			 a JNDI lookup on startup. -->
         <jta-data-source>myDS2</jta-data-source>
 		
-		<!-- A persistent unit has persistent (mapped) classes, 
-			 you list them here. -->
-        <class>com.igor.Message</class>
+		<!-- A persistent unit has persistent (mapped) classes, you list them here. -->
+        <class>com.igor.entity.Message</class>
 		
 		<!-- Hibernate can scan your classpath for mapped classes and 
 		     add them automatically to your persistence unit. 
