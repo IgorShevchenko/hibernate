@@ -1,6 +1,5 @@
 package com.igor;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -15,27 +14,26 @@ public class App {
 
 	public static void main(String[] args) throws Exception {
 
-		System.out.println(Arrays.toString(args));
-
-		TransactionManager TM = TransactionManager.getInstance();
-		EntityManagerFactory emf = PersistenceUnit.createEntityManagerFactory();
-
 		try {
-			saveMessage(TM, emf);
-			updateMessage(TM, emf);
+			saveMessage();
+			updateMessage();
 		} finally {
-			TM.rollback();
-			emf.close();
+			TransactionManager.rollback();
+			PersistenceUnit.close();
 		}
 	}
 
-	private static void saveMessage(TransactionManager TM, EntityManagerFactory emf) throws Exception {
+	private static void saveMessage() throws Exception {
+
+		TransactionManager tm = TransactionManager.getInstance();
+		EntityManagerFactory emf = PersistenceUnit.getInstance();
+
 		/*
 		 * Get access to the standard transaction API
 		 * <code>UserTransaction</code> and begin a transaction on this thread
 		 * of execution.
 		 */
-		UserTransaction tx = TM.getUserTransaction();
+		UserTransaction tx = tm.getUserTransaction();
 		tx.begin();
 
 		/*
@@ -73,12 +71,16 @@ public class App {
 		em.close();
 	}
 
-	private static void updateMessage(TransactionManager TM, EntityManagerFactory emf) throws Exception {
+	private static void updateMessage() throws Exception {
+
+		TransactionManager tm = TransactionManager.getInstance();
+		EntityManagerFactory emf = PersistenceUnit.getInstance();
+
 		/*
 		 * Every interaction with your database should occur within explicit
 		 * transaction boundaries, even if you are only reading data.
 		 */
-		UserTransaction tx = TM.getUserTransaction();
+		UserTransaction tx = tm.getUserTransaction();
 		tx.begin();
 
 		EntityManager em = emf.createEntityManager();
