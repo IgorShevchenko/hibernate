@@ -1,5 +1,7 @@
 package com.igor.setup;
 
+import java.util.Properties;
+
 import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 class MySqlConnection {
@@ -7,7 +9,7 @@ class MySqlConnection {
 	private final static String USER = "root";
 	private final static String PASSWORD = "root";
 
-	public static String getConnectionUrl() {
+	private static String getConnectionUrl() {
 		return String.format("jdbc:mysql://localhost/hibernate_db?user=%s&password=%s", USER, PASSWORD);
 	}
 
@@ -18,7 +20,8 @@ class MySqlConnection {
 	public static void configure(PoolingDataSource ds) {
 		// ds.setClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
 		ds.setClassName("bitronix.tm.resource.jdbc.lrc.LrcXADataSource");
-		ds.getDriverProperties().put("url", getConnectionUrl());
-		ds.getDriverProperties().put("driverClassName", "com.mysql.jdbc.Driver");
+		Properties driverProperties = ds.getDriverProperties();
+		driverProperties.put("url", getConnectionUrl());
+		driverProperties.put("driverClassName", "com.mysql.jdbc.Driver");
 	}
 }

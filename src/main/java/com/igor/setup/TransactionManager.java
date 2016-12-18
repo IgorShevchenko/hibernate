@@ -10,12 +10,14 @@ import javax.transaction.UserTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bitronix.tm.Configuration;
 import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 public class TransactionManager {
 
 	private static final String SERVER_ID = "myServer1234";
+	private static final String JTA_DATA_SOURCE = "myDS2";
 	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionManager.class);
 	private static final TransactionManager INSTANCE = new TransactionManager();
 
@@ -31,21 +33,23 @@ public class TransactionManager {
 		this.context = createInitialContext();
 
 		LOGGER.info("Starting database connection pool");
+		Configuration configuration = TransactionManagerServices.getConfiguration();
+
 		LOGGER.info("Setting stable unique identifier for transaction recovery");
-		TransactionManagerServices.getConfiguration().setServerId(SERVER_ID);
+		configuration.setServerId(SERVER_ID);
 
 		LOGGER.info("Disabling JMX binding of manager in unit tests");
-		TransactionManagerServices.getConfiguration().setDisableJmx(true);
+		configuration.setDisableJmx(true);
 
 		LOGGER.info("Disabling transaction logging for unit tests");
-		TransactionManagerServices.getConfiguration().setJournal("null");
+		configuration.setJournal("null");
 
 		LOGGER.info("Disabling warnings when the database isn't accessed in a transaction");
-		TransactionManagerServices.getConfiguration().setWarnAboutZeroResourceTransaction(false);
+		configuration.setWarnAboutZeroResourceTransaction(false);
 
 		LOGGER.info("Creating connection pool");
 		this.ds = new PoolingDataSource();
-		this.ds.setUniqueName(PersistenceUnit.JTA_DATA_SOURCE);
+		this.ds.setUniqueName(JTA_DATA_SOURCE);
 		this.ds.setMinPoolSize(1);
 		this.ds.setMaxPoolSize(5);
 		this.ds.setPreparedStatementCacheSize(10);
@@ -77,33 +81,35 @@ public class TransactionManager {
 	public UserTransaction getUserTransaction() {
 		try {
 			return (UserTransaction) this.context.lookup("java:comp/UserTransaction");
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	public DataSource getDataSource() {
 		try {
-			return (DataSource) this.context.lookup(PersistenceUnit.JTA_DATA_SOURCE);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-
-	public void rollback() {
-		UserTransaction tx = getUserTransaction();
-		try {
-			if (tx.getStatus() == Status.STATUS_ACTIVE || tx.getStatus() == Status.STATUS_MARKED_ROLLBACK)
-				tx.rollback();
-		} catch (Exception ex) {
-			System.err.println("Rollback of transaction failed, trace follows!");
-			ex.printStackTrace(System.err);
+			String name = this.ds.getUniqueName();
+			return (DataSource) this.context.lookup(name);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	public void stop() throws Exception {
-		LOGGER.trace("Stopping database connection pool");
+		LOGGER.info("Stopping database connection pool");
 		this.ds.close();
 		TransactionManagerServices.getTransactionManager().shutdown();
+	}
+
+	public static void rollback() {
+		UserTransaction tx = INSTANCE.getUserTransaction();
+		try {
+			int status = tx.getStatus();
+			if (status == Status.STATUS_ACTIVE || status == Status.STATUS_MARKED_ROLLBACK) {
+				tx.rollback();
+			}
+		} catch (Exception e) {
+			LOGGER.error("Rollback of transaction failed, trace follows!", e);
+		}
 	}
 }
