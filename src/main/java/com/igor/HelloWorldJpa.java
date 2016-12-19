@@ -10,7 +10,7 @@ import com.igor.entity.Message;
 import com.igor.setup.PersistenceUnit;
 import com.igor.setup.TransactionManager;
 
-public class App {
+public class HelloWorldJpa {
 
 	public static void main(String[] args) throws Exception {
 
@@ -29,23 +29,21 @@ public class App {
 		EntityManagerFactory emf = PersistenceUnit.getInstance();
 
 		/*
-		 * Get access to the standard transaction API
-		 * <code>UserTransaction</code> and begin a transaction on this thread
-		 * of execution.
+		 * Get access to the standard transaction API UserTransaction and begin
+		 * a transaction on this thread of execution.
 		 */
 		UserTransaction tx = tm.getUserTransaction();
 		tx.begin();
 
 		/*
-		 * Begin a new session with the database by creating an
-		 * <code>EntityManager</code>, this is your context for all persistence
-		 * operations.
+		 * Begin a new SESSION with the database by creating an EntityManager,
+		 * this is your context for all persistence operations.
 		 */
 		EntityManager em = emf.createEntityManager();
 
 		/*
-		 * Create a new instance of the mapped domain model class
-		 * <code>Message</code> and set its <code>text</code> property.
+		 * Create a new instance of the mapped domain model class Message and
+		 * set its text property.
 		 */
 		Message message = new Message();
 		message.setText("Hello World!");
@@ -59,14 +57,13 @@ public class App {
 
 		/*
 		 * Commit the transaction, Hibernate now automatically checks the
-		 * persistence context and executes the necessary SQL
-		 * <code>INSERT</code> statement.
+		 * persistence context and executes the necessary SQL INSERT statement.
 		 */
 		tx.commit();
 		// INSERT into MESSAGE (ID, TEXT) values (1, 'Hello World!')
 
 		/*
-		 * If you create an <code>EntityManager</code>, you must close it.
+		 * If you create an EntityManager, you must close it.
 		 */
 		em.close();
 	}
@@ -83,30 +80,37 @@ public class App {
 		UserTransaction tx = tm.getUserTransaction();
 		tx.begin();
 
+		/*
+		 * Begin a new SESSION with the database by creating an EntityManager,
+		 * this is your context for all persistence operations.
+		 */
 		EntityManager em = emf.createEntityManager();
 
 		/*
-		 * Execute a query to retrieve all instances of <code>Message</code>
-		 * from the database.
+		 * Execute a query to retrieve all instances of Message from the
+		 * database.
 		 */
-		List<Message> messages = em.createQuery("select m from Message m", Message.class).getResultList();
+		List<Message> messages = em.createQuery("SELECT m FROM Message m", Message.class).getResultList();
 		// SELECT * from MESSAGE
 
 		/*
 		 * You can change the value of a property, Hibernate will detect this
-		 * automatically because the loaded <code>Message</code> is still
-		 * attached to the persistence context it was loaded in.
+		 * automatically because the loaded Message is still attached to the
+		 * persistence context it was loaded in.
 		 */
 		messages.get(0).setText("Take me to your leader!");
 
 		/*
 		 * On commit, Hibernate checks the persistence context for dirty state
-		 * and executes the SQL <code>UPDATE</code> automatically to synchronize
-		 * the in-memory with the database state.
+		 * and executes the SQL UPDATE automatically to synchronize the
+		 * in-memory with the database state, e.g. em.persist(messages.get(0));
 		 */
 		tx.commit();
 		// UPDATE MESSAGE set TEXT = 'Take me to your leader!' where ID = 1
 
+		/*
+		 * If you create an EntityManager, you must close it.
+		 */
 		em.close();
 	}
 }

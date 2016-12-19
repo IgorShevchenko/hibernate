@@ -5,29 +5,25 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 /*
- * Every persistent entity class must have at least the <code>@Entity</code>
- * annotation. Hibernate maps this class to a table called <code>MESSAGE</code>.
+ * Every persistent entity class must have at least the @Entity annotation.
+ * Hibernate maps this class to a table called MESSAGE.
  */
 @Entity
 public class Message {
 
 	/*
 	 * Every persistent entity class must have an identifier attribute annotated
-	 * with <code>@Id</code>. Hibernate maps this attribute to a column named
-	 * <code>ID</code>.
+	 * with @Id. Hibernate maps this attribute to a column named ID. Must
+	 * generate identifiers; annotation enables automatic generation of IDs.
 	 */
 	@Id
-	/*
-	 * Someone must generate identifier values; this annotation enables
-	 * automatic generation of IDs.
-	 */
 	@GeneratedValue
-	private Long id;
+	private int id;
 
 	/*
 	 * You usually implement regular attributes of a persistent class with
 	 * private or protected fields, and public getter/setter method pairs.
-	 * Hibernate maps this attribute to a column called <code>TEXT</code>.
+	 * Hibernate maps this attribute to a column called TEXT.
 	 */
 	private String text;
 

@@ -15,7 +15,7 @@ public class SingleLineFormatter extends Formatter {
 
 		String threadName = Thread.currentThread().getName();
 		Date recordDate = new Date(record.getMillis());
-		DateFormat dateFormat = new SimpleDateFormat("kk:mm:ss.SS");
+		DateFormat dateFormat = new SimpleDateFormat("kk:mm:ss.SSS");
 
 		StringBuilder sb = new StringBuilder(180);
 		sb.append("[");
