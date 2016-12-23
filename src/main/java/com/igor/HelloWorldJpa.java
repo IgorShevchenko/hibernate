@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
 import com.igor.entity.Message;
@@ -46,7 +48,7 @@ public class HelloWorldJpa {
 		 * set its text property.
 		 */
 		Message message = new Message();
-		message.setText("Hello World!");
+		message.setText("Hello World JPA!");
 
 		/*
 		 * Enlist the transient instance with your persistence context, you make
@@ -60,7 +62,7 @@ public class HelloWorldJpa {
 		 * persistence context and executes the necessary SQL INSERT statement.
 		 */
 		tx.commit();
-		// INSERT into MESSAGE (ID, TEXT) values (1, 'Hello World!')
+		// INSERT into MESSAGE (ID, TEXT) values (1, 'Hello World JPA!')
 
 		/*
 		 * If you create an EntityManager, you must close it.
@@ -93,12 +95,18 @@ public class HelloWorldJpa {
 		List<Message> messages = em.createQuery("SELECT m FROM Message m", Message.class).getResultList();
 		// SELECT * from MESSAGE
 
+		// Second way
+		CriteriaQuery<Message> criteriaQuery = em.getCriteriaBuilder().createQuery(Message.class);
+		Root<Message> root = criteriaQuery.from(Message.class);
+		criteriaQuery.select(root);
+		messages = em.createQuery(criteriaQuery).getResultList();
+
 		/*
 		 * You can change the value of a property, Hibernate will detect this
 		 * automatically because the loaded Message is still attached to the
 		 * persistence context it was loaded in.
 		 */
-		messages.get(0).setText("Take me to your leader!");
+		messages.get(0).setText("Take me to your JPA!");
 
 		/*
 		 * On commit, Hibernate checks the persistence context for dirty state
@@ -106,7 +114,7 @@ public class HelloWorldJpa {
 		 * in-memory with the database state, e.g. em.persist(messages.get(0));
 		 */
 		tx.commit();
-		// UPDATE MESSAGE set TEXT = 'Take me to your leader!' where ID = 1
+		// UPDATE MESSAGE set TEXT = 'Take me to your JPA!' where ID = 1
 
 		/*
 		 * If you create an EntityManager, you must close it.
