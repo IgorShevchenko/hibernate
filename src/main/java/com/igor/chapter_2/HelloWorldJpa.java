@@ -1,4 +1,4 @@
-package com.igor;
+package com.igor.chapter_2;
 
 import java.util.List;
 
@@ -8,7 +8,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
-import com.igor.entity.Message;
 import com.igor.setup.PersistenceUnit;
 import com.igor.setup.TransactionManager;
 

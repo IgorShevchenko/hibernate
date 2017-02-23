@@ -1,4 +1,4 @@
-package com.igor;
+package com.igor.setup;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

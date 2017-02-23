@@ -1,4 +1,4 @@
-package com.igor;
+package com.igor.chapter_2;
 
 import java.util.List;
 
@@ -16,7 +16,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
 import org.hibernate.resource.transaction.backend.jta.internal.JtaTransactionCoordinatorBuilderImpl;
 
-import com.igor.entity.Message;
 import com.igor.setup.TransactionManager;
 
 public class HelloWorldHibernate {
