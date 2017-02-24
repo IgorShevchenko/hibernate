@@ -1,3 +1,5 @@
 
 1. Move code to tests
-2. 
+2. Ignore target
+3. Book code to git
+4. 

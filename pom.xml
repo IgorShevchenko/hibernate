@@ -13,6 +13,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.22</slf4j.version>
+		<javax-el.version>3.0.1-b04</javax-el.version>
 	</properties>
 
 	<dependencies>
@@ -21,6 +22,24 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>5.2.5.Final</version>
+		</dependency>
+
+		<!-- Hibernate's Bean Validation (JSR-303) reference implementation -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.4.0.Final</version>
+		</dependency>
+		<!-- This needs EL -->
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+			<version>${javax-el.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.el</artifactId>
+			<version>${javax-el.version}</version>
 		</dependency>
 
 		<dependency>

@@ -6,11 +6,12 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 class MySqlConnection {
 
+	private final static String DB = "hibernate_db";
 	private final static String USER = "root";
 	private final static String PASSWORD = "root";
 
 	private static String getConnectionUrl() {
-		return String.format("jdbc:mysql://localhost/hibernate_db?user=%s&password=%s", USER, PASSWORD);
+		return String.format("jdbc:mysql://localhost/%s?user=%s&password=%s", DB, USER, PASSWORD);
 	}
 
 	public static String getHibernateDialect() {
