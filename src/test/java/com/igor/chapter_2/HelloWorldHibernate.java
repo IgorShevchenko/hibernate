@@ -6,6 +6,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
+import org.assertj.core.api.Assertions;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
@@ -148,21 +149,21 @@ public class HelloWorldHibernate {
 		// List<Message> messages = sessionFactory.getCurrentSession().createCriteria(Message.class).list();
 
 		// One way
-		List<Message> messages = session.createQuery("SELECT m FROM Message m", Message.class).getResultList();
+		List<Message> messages1 = session.createQuery("SELECT m FROM Message m", Message.class).getResultList();
 		// SELECT * from MESSAGE
 
 		// Second way
 		CriteriaQuery<Message> criteriaQuery = session.getCriteriaBuilder().createQuery(Message.class);
 		Root<Message> root = criteriaQuery.from(Message.class);
 		criteriaQuery.select(root);
-		messages = session.createQuery(criteriaQuery).getResultList();
+		List<Message> messages2 = session.createQuery(criteriaQuery).getResultList();
 
 		/*
 		 * You can change the value of a property, Hibernate will detect this
 		 * automatically because the loaded Message is still attached to the
 		 * persistence context it was loaded in.
 		 */
-		messages.get(0).setText("Take me to your Hibernate!");
+		messages1.get(0).setText("Take me to your Hibernate!");
 
 		/*
 		 * On commit, Hibernate checks the persistence context for dirty state
@@ -171,5 +172,8 @@ public class HelloWorldHibernate {
 		 */
 		tx.commit();
 		// UPDATE MESSAGE set TEXT = 'Take me to your Hibernate!' where ID = 1
+
+		// Assertions
+		Assertions.assertThat(messages1).hasSize(1).hasSameSizeAs(messages2);
 	}
 }

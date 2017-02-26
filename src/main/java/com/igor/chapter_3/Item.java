@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,6 +17,7 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+// Has circular dependency with Bid
 @Entity
 public class Item {
 
@@ -32,18 +34,25 @@ public class Item {
 	protected long version = 1;
 
 	// varchar(255)
+	// Validations can also be on getter
 	@NotNull
 	@Size(min = 2, max = 255, message = "Name is required, maximum 255 characters.")
 	protected String name;
 
-	// Datetime
+	// java.util.Date does not store milliseconds
+	// Date is Datetime, no milliseconds
+	// LocalDateTime is Datetime, no milliseconds
+	// Works with java.util.Date and subtypes ,and Calendar only
 	@Future
+	@Column(columnDefinition = "DATETIME(3)")
+	// protected Timestamp auctionEnd;
 	protected Date auctionEnd;
 
 	// Persistent with auto settings, decimal(19,2)
 	protected BigDecimal buyNowPrice;
 
-	// Column in the Item table, FK + index, bigint(20) 
+	// Column in the Item table, FK + index, bigint(20)
+	// Lay loaded fields are not displayed in Eclipse
 	@ManyToOne(fetch = FetchType.LAZY)
 	protected Category category;
 
@@ -52,12 +61,12 @@ public class Item {
 	protected Set<Bid> bids = new HashSet<Bid>();
 
 	// Not persisted
-	public boolean isData1() {
+	public final boolean isData1() {
 		return true;
 	}
 
 	// Not persisted
-	public int getData2() {
+	public final int getData2() {
 		return -100;
 	}
 
@@ -74,11 +83,16 @@ public class Item {
 	}
 
 	public Date getAuctionEnd() {
-		return auctionEnd;
+		// Immutable instance
+		if (this.auctionEnd == null) {
+			return null;
+		} else {
+			return new Date(this.auctionEnd.getTime());
+		}
 	}
 
 	public void setAuctionEnd(Date auctionEnd) {
-		this.auctionEnd = auctionEnd;
+		this.auctionEnd = new Date(auctionEnd.getTime());
 	}
 
 	public BigDecimal getBuyNowPrice() {
@@ -90,6 +104,10 @@ public class Item {
 	}
 
 	public Set<Bid> getBids() {
+		// In case JPA uses field access, can return unmodifiableSet
+		// Access type is defined by the position of the @Id or @EmbeddedId annotations
+		// Need to add logic => property access
+		// Need to maintain encapsulation => field access
 		return bids;
 	}
 

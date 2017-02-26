@@ -8,6 +8,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
+import org.assertj.core.api.Assertions;
+
 import com.igor.setup.PersistenceUnit;
 import com.igor.setup.TransactionManager;
 
@@ -20,7 +22,7 @@ public class HelloWorldJpa {
 			updateMessage();
 		} finally {
 			TransactionManager.rollback();
-			PersistenceUnit.close();
+			PersistenceUnit.getInstance().close();
 		}
 	}
 
@@ -91,21 +93,21 @@ public class HelloWorldJpa {
 		 * Execute a query to retrieve all instances of Message from the
 		 * database.
 		 */
-		List<Message> messages = em.createQuery("SELECT m FROM Message m", Message.class).getResultList();
+		List<Message> messages1 = em.createQuery("SELECT m FROM Message m", Message.class).getResultList();
 		// SELECT * from MESSAGE
 
 		// Second way
 		CriteriaQuery<Message> criteriaQuery = em.getCriteriaBuilder().createQuery(Message.class);
 		Root<Message> root = criteriaQuery.from(Message.class);
 		criteriaQuery.select(root);
-		messages = em.createQuery(criteriaQuery).getResultList();
+		List<Message> messages2 = em.createQuery(criteriaQuery).getResultList();
 
 		/*
 		 * You can change the value of a property, Hibernate will detect this
 		 * automatically because the loaded Message is still attached to the
 		 * persistence context it was loaded in.
 		 */
-		messages.get(0).setText("Take me to your JPA!");
+		messages1.get(0).setText("Take me to your JPA!");
 
 		/*
 		 * On commit, Hibernate checks the persistence context for dirty state
@@ -119,5 +121,8 @@ public class HelloWorldJpa {
 		 * If you create an EntityManager, you must close it.
 		 */
 		em.close();
+
+		// Assertions
+		Assertions.assertThat(messages1).hasSize(1).hasSameSizeAs(messages2);
 	}
 }

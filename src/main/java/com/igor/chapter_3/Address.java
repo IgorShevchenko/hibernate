@@ -1,16 +1,19 @@
 package com.igor.chapter_3;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 
 /**
- * 
  * Instead of <code>@Entity</code>, this component POJO is marked with
  * <code>@Embeddable</code>. It has no identifier property.
  */
 @Embeddable
-public class Address {
+public class Address implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	// @NotNull is ignored for DDL generation here!
 	// @Column(nullable = false) used for DDL generation!

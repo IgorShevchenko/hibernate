@@ -29,7 +29,8 @@ public class Bid {
 	// @JoinColumn(name = "ITEM_ID") // Default name, name of column in Bid table 
 	protected Item item;
 
-	public Bid() {
+	protected Bid() {
+		// For Hibernate, protected is better than package-visible
 	}
 
 	public Bid(Item item) {

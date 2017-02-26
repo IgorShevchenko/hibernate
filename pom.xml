@@ -24,7 +24,8 @@
 			<version>5.2.5.Final</version>
 		</dependency>
 
-		<!-- Hibernate's Bean Validation (JSR-303) reference implementation -->
+		<!-- Hibernate's Bean Validation (JSR-303) reference implementation, has 
+			transitive dependency -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -74,6 +75,14 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Rich and fluent assertions for testing for Java -->
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.6.2</version>
 			<scope>test</scope>
 		</dependency>
 

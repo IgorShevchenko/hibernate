@@ -1,5 +1,12 @@
+Ideas:
 
-1. Move code to tests
-2. Ignore target
-3. Book code to git
-4. 
+1. Include URL to maven central and check transitive dependencies.
+2. Find bugs
+3. Documentation
+4. Dictionary
+5. Check TODOs
+6. java.util.Date and timestamp
+7. Property exceptions
+8. Load item without any bids, npe
+9. C:\java\workspace\hibernate-examples\examples\src\test\java\org\jpwh\test\simple
+10. 

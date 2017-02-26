@@ -21,6 +21,7 @@ public class User implements Serializable {
 	// Can define own generator, see model/package-info.java
 	// @GeneratedValue(generator = "ID_GENERATOR")
 
+	// ID is required for each entity
 	@Id
 	@GeneratedValue
 	protected Long id;
@@ -28,6 +29,7 @@ public class User implements Serializable {
 	protected String username;
 
 	// The Address is @Embeddable, no annotation needed here
+	@Embedded
 	protected Address homeAddress;
 
 	// There should be another way?

@@ -23,6 +23,7 @@
 		<class>com.igor.chapter_3.Category</class>
 		<class>com.igor.chapter_3.Address</class>
 		<class>com.igor.chapter_3.User</class>
+		<class>com.igor.chapter_3.UserName</class>
 
 		<!-- Hibernate can scan your classpath for mapped classes and add them 
 			automatically to your persistence unit. This setting disables that feature -->

@@ -11,6 +11,7 @@ public class Category {
 	// @GeneratedValue(generator = "ID_GENERATOR")
 
 	// Primary key, bigint(20)
+	// ID is required for each entity
 	@Id
 	@GeneratedValue
 	protected Long id;

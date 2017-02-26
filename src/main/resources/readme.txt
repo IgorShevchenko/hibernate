@@ -6,7 +6,4 @@ Run with VM argument:
 
 In Eclipse setup 'Arguments' for 'Run Configurations' and 'Debug Configurations'.
 
-2) POM.XML
-
-Include URL to maven central and check transitive dependencies
- 
+2) Every interaction with your database should occur within explicit transaction boundaries, even if you are only reading data.
