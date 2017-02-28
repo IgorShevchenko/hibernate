@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,7 +18,8 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-// Has circular dependency with Bid
+// Has circular dependency with Bid.
+// @Entity makes all fields/properties persistent. 
 @Entity
 public class Item {
 
@@ -26,11 +28,13 @@ public class Item {
 
 	// Primary key, bigint(20)
 	@Id
-	@GeneratedValue
+	@GeneratedValue	
 	protected Long id;
 
 	// No getter/setter, still persisted, bigint(20)
 	@Version
+	// Optional
+	@Basic
 	protected long version = 1;
 
 	// varchar(255)
@@ -39,10 +43,10 @@ public class Item {
 	@Size(min = 2, max = 255, message = "Name is required, maximum 255 characters.")
 	protected String name;
 
-	// java.util.Date does not store milliseconds
-	// Date is Datetime, no milliseconds
-	// LocalDateTime is Datetime, no milliseconds
-	// Works with java.util.Date and subtypes ,and Calendar only
+	// java.util.Date does not store milliseconds and by default maps to DATETIME
+	// LocalDateTime is also by default mapped to Datetime, no milliseconds
+	// @Future works with java.util.Date and subtypes, and Calendar only
+	// Apply column definition to enforce milliseconds
 	@Future
 	@Column(columnDefinition = "DATETIME(3)")
 	// protected Timestamp auctionEnd;

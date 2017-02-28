@@ -1,5 +1,6 @@
 // Global metadata, package-level annotations. Hibernate extension of javax.persistence.NamedQuery
 // Otherwise need to put annotation on some MyNamedQueries.java class as part of domain model or in XML file.
+// Can put them into separate mapping XML file?
 
 @org.hibernate.annotations.NamedQueries({
     @org.hibernate.annotations.NamedQuery(

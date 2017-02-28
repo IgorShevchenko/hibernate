@@ -9,10 +9,12 @@ import com.igor.setup.DbTestClient;
 
 public class UserTest {
 
+	private static final String PERSISTENCE_UNIT = "Chapter3";
+
 	@Test
 	public void shouldStoreInDB() throws Exception {
 
-		DbTestClient client = new DbTestClient();
+		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT);
 
 		User user = new User();
 		user.setUsername("Igor");

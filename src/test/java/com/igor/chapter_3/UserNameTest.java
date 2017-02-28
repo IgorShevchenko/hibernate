@@ -7,6 +7,8 @@ import com.igor.setup.DbTestClient;
 
 public class UserNameTest {
 
+	private static final String PERSISTENCE_UNIT = "Chapter3";
+	
 	/**
 	 * Database stores the name of a user as a single NAME column, but UserName
 	 * class has separate firstName and lastName fields.
@@ -16,7 +18,7 @@ public class UserNameTest {
 	@Test
 	public void shouldStoreInDB() throws Exception {
 
-		DbTestClient client = new DbTestClient();
+		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT);
 
 		UserName userName = new UserName();
 		userName.setName("Igor Shevchenko");

@@ -5,25 +5,15 @@
 
 	<!-- The <code>persistence.xml</code> file configures at least one persistence 
 		unit; each unit must have a unique name -->
-	<persistence-unit name="HelloWorldPU">
+	<persistence-unit name="Chapter2">
 
 		<!-- Each persistence unit must have a database connection. Here you delegate 
 			to an existing <code>java.sql.DataSource</code>. Hibernate will find the 
 			data source by name with a JNDI lookup on startup -->
-		<jta-data-source>myDS2</jta-data-source>
+		<jta-data-source>myDS</jta-data-source>
 
 		<!-- A persistent unit has persistent (mapped) classes, you list them here -->
-
-		<!-- CHAPTER 2 -->
-		<!-- <class>com.igor.chapter_2.Message</class> -->
-
-		<!-- CHAPTER 3 -->
-		<class>com.igor.chapter_3.Item</class>
-		<class>com.igor.chapter_3.Bid</class>
-		<class>com.igor.chapter_3.Category</class>
-		<class>com.igor.chapter_3.Address</class>
-		<class>com.igor.chapter_3.User</class>
-		<class>com.igor.chapter_3.UserName</class>
+		<class>com.igor.chapter_2.Message</class>
 
 		<!-- Hibernate can scan your classpath for mapped classes and add them 
 			automatically to your persistence unit. This setting disables that feature -->
@@ -47,6 +37,79 @@
 			<property name="hibernate.use_sql_comments" value="true" />
 		</properties>
 
+	</persistence-unit>
+
+	<persistence-unit name="Chapter3">
+		<jta-data-source>myDS</jta-data-source>
+		<class>com.igor.chapter_3.Item</class>
+		<class>com.igor.chapter_3.Bid</class>
+		<class>com.igor.chapter_3.Category</class>
+		<class>com.igor.chapter_3.Address</class>
+		<class>com.igor.chapter_3.User</class>
+		<class>com.igor.chapter_3.UserName</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="javax.persistence.schema-generation.database.action"
+				value="drop-and-create" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.use_sql_comments" value="true" />
+			<property name="hibernate.archive.autodetection" value="none" />
+		</properties>
+	</persistence-unit>
+
+	<persistence-unit name="Chapter3_JPA_XML">
+		<jta-data-source>myDS</jta-data-source>
+
+		<!-- Don't need to list classes here: XML mappings will override them -->
+		<mapping-file>chapter_3/pu-metadata.xml</mapping-file>
+		<mapping-file>chapter_3/item-metadata.xml</mapping-file>
+
+		<!-- Can list extra classes here if "xml-mapping-metadata-complete" is 
+			not set, these classes will be mapped by annotations, and overriden by XML 
+			metadata, if these classes are also listed there -->
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="javax.persistence.schema-generation.database.action"
+				value="drop-and-create" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.use_sql_comments" value="true" />
+
+			<!-- Ignore hbm.xml files and annotated classes -->
+			<property name="hibernate.archive.autodetection" value="none" />
+		</properties>
+	</persistence-unit>
+
+	<persistence-unit name="Chapter3_JPA_XML_override">
+		<jta-data-source>myDS</jta-data-source>
+		<mapping-file>chapter_3/category-metadata-override.xml</mapping-file>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="javax.persistence.schema-generation.database.action"
+				value="drop-and-create" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.use_sql_comments" value="true" />
+			<property name="hibernate.archive.autodetection" value="none" />
+		</properties>
+	</persistence-unit>
+
+	<persistence-unit name="Chapter3_HBM_XML">
+		<jta-data-source>myDS</jta-data-source>
+
+		<!-- No classes or JPA mapping files, only HBM XML -->
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="javax.persistence.schema-generation.database.action"
+				value="drop-and-create" />
+
+			<!-- Define Hibername native XML files -->
+			<property name="hibernate.hbmxml.files" value="chapter_3/item-metadata.hbm.xml" />
+
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.use_sql_comments" value="true" />
+			<property name="hibernate.archive.autodetection" value="none" />
+		</properties>
 	</persistence-unit>
 
 </persistence>

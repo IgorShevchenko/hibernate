@@ -7,7 +7,9 @@ import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import javax.persistence.metamodel.Metamodel;
 import javax.transaction.UserTransaction;
 
 /**
@@ -17,11 +19,19 @@ import javax.transaction.UserTransaction;
 public class DbTestClient implements Closeable {
 
 	private final TransactionManager tm;
+
+	/**
+	 * One instance in an application per data source.
+	 */
 	private final EntityManagerFactory emf;
 
-	public DbTestClient() {
+	public DbTestClient(String persistenceUnit) {
 		this.tm = TransactionManager.getInstance();
-		this.emf = PersistenceUnit.getOpenInstance();
+		this.emf = Persistence.createEntityManagerFactory(persistenceUnit);
+	}
+
+	public Metamodel getMetamodel() {
+		return this.emf.getMetamodel();
 	}
 
 	/**
@@ -50,8 +60,9 @@ public class DbTestClient implements Closeable {
 	}
 
 	/**
-	 * Persist entities in order, inside a transaction. <b>Persistence context
-	 * is closed</b>, so further changes to persisted entities are not tracked.
+	 * Persist entities in order, inside a single transaction. <b>Persistence
+	 * context is closed</b>, so further changes to persisted entities are not
+	 * tracked.
 	 * 
 	 * @param entities
 	 * @throws Exception
@@ -65,7 +76,7 @@ public class DbTestClient implements Closeable {
 	}
 
 	/**
-	 * Get persisted entity with the specified ID, inside a transaction.
+	 * Get persisted entity with the specified ID, inside a single transaction.
 	 * <b>Persistence context is closed</b>, so changes to returned entity are
 	 * not tracked. Lazy loading is not supported.
 	 * 
@@ -95,9 +106,9 @@ public class DbTestClient implements Closeable {
 	}
 
 	/**
-	 * Get all persisted entities, inside a transaction. <b>Persistence context
-	 * is closed</b>, so changes to returned entities are not tracked. Lazy
-	 * loading is not supported.
+	 * Get all persisted entities, inside a single transaction. <b>Persistence
+	 * context is closed</b>, so changes to returned entities are not tracked.
+	 * Lazy loading is not supported.
 	 * 
 	 * @param entityClass
 	 * @return All stored entities.

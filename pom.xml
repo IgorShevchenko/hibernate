@@ -43,6 +43,16 @@
 			<version>${javax-el.version}</version>
 		</dependency>
 
+		<!-- Annotation Processor to generate JPA 2 static metamodel classes, Hibernate 
+			Metamodel annotation processor will be detected by the Java compiler -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jpamodelgen</artifactId>
+			<version>5.2.8.Final</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -87,4 +97,5 @@
 		</dependency>
 
 	</dependencies>
+
 </project>

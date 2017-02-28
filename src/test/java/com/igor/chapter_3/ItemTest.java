@@ -20,8 +20,12 @@ import com.igor.setup.DbTestClient;
 
 public class ItemTest {
 
+	private static final String PERSISTENCE_UNIT = "Chapter3";
+	private static final String PERSISTENCE_UNIT_JPA_XML = "Chapter3_JPA_XML";
+	private static final String PERSISTENCE_UNIT_HMB_XML = "Chapter3_HBM_XML";
+
 	@Test
-	public void linkBidAndItem() {
+	public void shouldLinkBidAndItem() {
 		Item anItem = new Item();
 		Bid aBid = new Bid();
 
@@ -77,7 +81,7 @@ public class ItemTest {
 	@Test
 	public void shouldStoreInDB() throws Exception {
 
-		DbTestClient client = new DbTestClient();
+		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT);
 
 		// Category
 		Category category = new Category();
@@ -125,6 +129,63 @@ public class ItemTest {
 			Assertions.assertThat(categoryName).isEqualTo(category.getName());
 			Assertions.assertThat(itemDb1AuctionEnd).isEqualTo(item1.getAuctionEnd());
 		});
+
+		client.close();
+	}
+
+	@Test
+	public void shouldUseJpaXmlMetadata() throws Exception {
+
+		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT_JPA_XML);
+
+		// Item
+		Item item = new Item();
+		item.version = 5;
+		item.setName("item");
+		item.setBuyNowPrice(BigDecimal.TEN);
+		item.setAuctionEnd(new Date(System.currentTimeMillis() + 10000));
+
+		// Save item to the database
+		client.persist(item);
+
+		// Load item from the database
+		Item itemDb = client.select(Item.class, item.getId());
+
+		Assertions.assertThat(itemDb.version).isEqualTo(item.version);
+		Assertions.assertThat(itemDb.getName()).isEqualTo(item.getName());
+		Assertions.assertThat(itemDb.getAuctionEnd()).isEqualTo(item.getAuctionEnd());
+
+		// BigDecimals are checked by compareTo
+		Assertions.assertThat(itemDb.getBuyNowPrice()).isEqualByComparingTo(item.getBuyNowPrice());
+
+		client.close();
+	}
+
+	@Test
+	public void shouldUseHbmXmlMetadata() throws Exception {
+
+		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT_HMB_XML);
+
+		// Item
+		Item item = new Item();
+		item.setName("item");
+		item.setBuyNowPrice(BigDecimal.TEN);
+		item.setAuctionEnd(new Date(System.currentTimeMillis() + 10000));
+
+		// Save item to the database
+		client.persist(item);
+
+		// Load item from the database
+		Item itemDb = client.select(Item.class, item.getId());
+
+		// Version is not persisted, default value
+		Assertions.assertThat(itemDb.version).isEqualTo(1);
+
+		// BuyNowPrice is not persisted
+		Assertions.assertThat(itemDb.getBuyNowPrice()).isNull();
+
+		Assertions.assertThat(itemDb.getName()).isEqualTo(item.getName());
+		Assertions.assertThat(itemDb.getAuctionEnd()).isEqualTo(item.getAuctionEnd());
 
 		client.close();
 	}

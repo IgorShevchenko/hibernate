@@ -4,32 +4,40 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
 import org.assertj.core.api.Assertions;
+import org.junit.Test;
 
-import com.igor.setup.PersistenceUnit;
 import com.igor.setup.TransactionManager;
 
+/**
+ * Shows raw code to persist\retrieve entity using JPA.
+ */
 public class HelloWorldJpa {
 
-	public static void main(String[] args) throws Exception {
+	private static final String PERSISTENCE_UNIT = "Chapter2";
+
+	@Test
+	public void test() throws Exception {
+
+		// Initialize data source required by JPA/Hibernate
+		TransactionManager tm = TransactionManager.getInstance();
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT);
 
 		try {
-			saveMessage();
-			updateMessage();
+			saveMessage(tm, emf);
+			updateMessage(tm, emf);
 		} finally {
 			TransactionManager.rollback();
-			PersistenceUnit.getInstance().close();
+			emf.close();
 		}
 	}
 
-	private static void saveMessage() throws Exception {
-
-		TransactionManager tm = TransactionManager.getInstance();
-		EntityManagerFactory emf = PersistenceUnit.getInstance();
+	private void saveMessage(TransactionManager tm, EntityManagerFactory emf) throws Exception {
 
 		/*
 		 * Get access to the standard transaction API UserTransaction and begin
@@ -71,10 +79,7 @@ public class HelloWorldJpa {
 		em.close();
 	}
 
-	private static void updateMessage() throws Exception {
-
-		TransactionManager tm = TransactionManager.getInstance();
-		EntityManagerFactory emf = PersistenceUnit.getInstance();
+	private void updateMessage(TransactionManager tm, EntityManagerFactory emf) throws Exception {
 
 		/*
 		 * Every interaction with your database should occur within explicit

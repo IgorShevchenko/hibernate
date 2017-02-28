@@ -3,13 +3,16 @@ package com.igor.setup;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-public class PersistenceUnit {
+/**
+ * Shows how to create single application-wide instance of EntityManagerFactory.
+ */
+class PersistenceUnit {
 
-	private static final String PERSISTENCE_UNIT_NAME = "HelloWorldPU";
+	private static final String PERSISTENCE_UNIT = "Chapter2";
 	private static final EntityManagerFactory FACTORY_INSTANCE = createEntityManagerFactory();
 
 	private static EntityManagerFactory createEntityManagerFactory() {
-		return Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		return Persistence.createEntityManagerFactory(PERSISTENCE_UNIT);
 	}
 
 	/**
@@ -18,7 +21,7 @@ public class PersistenceUnit {
 	 * 
 	 * @return Instance constructed during application startup.
 	 */
-	public static EntityManagerFactory getInstance() {
+	static EntityManagerFactory getInstance() {
 		return FACTORY_INSTANCE;
 	}
 

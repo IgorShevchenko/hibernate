@@ -1,5 +1,6 @@
 package com.igor.chapter_3;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -16,7 +17,8 @@ public class Category {
 	@GeneratedValue
 	protected Long id;
 
-	// Persistent with auto settings, varchar(255) 
+	// Persistent with auto settings if no annotations are given, varchar(20) 
+	@Column(length = 20)
 	protected String name;
 
 	public Long getId() {

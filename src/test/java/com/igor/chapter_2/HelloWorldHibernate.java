@@ -16,9 +16,13 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
 import org.hibernate.resource.transaction.backend.jta.internal.JtaTransactionCoordinatorBuilderImpl;
+import org.junit.Test;
 
 import com.igor.setup.TransactionManager;
 
+/**
+ * Shows raw code to persist\retrieve entity using Hibernate.
+ */
 public class HelloWorldHibernate {
 
 	protected SessionFactory unusedSimpleBoot() {
@@ -29,9 +33,22 @@ public class HelloWorldHibernate {
 		return sessionFactory;
 	}
 
-	private static SessionFactory createSessionFactory() {
+	@Test
+	public void test() throws Exception {
 
-		// Initialize data source.
+		SessionFactory sessionFactory = createSessionFactory();
+
+		try {
+			saveMessage(sessionFactory);
+			updateMessage(sessionFactory);
+		} finally {
+			TransactionManager.rollback();
+		}
+	}
+
+	private SessionFactory createSessionFactory() {
+
+		// Initialize data source required by JPA/Hibernate
 		TransactionManager.getInstance();
 
 		// This builder helps you create the immutable service registry with chained method calls.
@@ -39,7 +56,7 @@ public class HelloWorldHibernate {
 
 		// Configure the services registry by applying settings.
 		serviceRegistryBuilder
-				.applySetting("hibernate.connection.datasource", "myDS2")
+				.applySetting("hibernate.connection.datasource", "myDS")
 				.applySetting("hibernate.format_sql", "true")
 				.applySetting("hibernate.use_sql_comments", "true")
 				.applySetting("hibernate.hbm2ddl.auto", "create-drop");
@@ -70,19 +87,7 @@ public class HelloWorldHibernate {
 		return sessionFactory;
 	}
 
-	public static void main(String[] args) throws Exception {
-
-		SessionFactory sessionFactory = createSessionFactory();
-
-		try {
-			saveMessage(sessionFactory);
-			updateMessage(sessionFactory);
-		} finally {
-			TransactionManager.rollback();
-		}
-	}
-
-	private static void saveMessage(SessionFactory sessionFactory) throws Exception {
+	private void saveMessage(SessionFactory sessionFactory) throws Exception {
 
 		TransactionManager tm = TransactionManager.getInstance();
 
@@ -122,7 +127,7 @@ public class HelloWorldHibernate {
 		// INSERT into MESSAGE (ID, TEXT) values (1, 'Hello World Hibernate!')
 	}
 
-	private static void updateMessage(SessionFactory sessionFactory) throws Exception {
+	private void updateMessage(SessionFactory sessionFactory) throws Exception {
 
 		TransactionManager tm = TransactionManager.getInstance();
 

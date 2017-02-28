@@ -17,7 +17,7 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
 public class TransactionManager {
 
 	private static final String SERVER_ID = "myServer1234";
-	private static final String JTA_DATA_SOURCE = "myDS2";
+	private static final String JTA_DATA_SOURCE = "myDS";
 	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionManager.class);
 	private static final TransactionManager INSTANCE = new TransactionManager();
 
@@ -30,6 +30,7 @@ public class TransactionManager {
 
 	private TransactionManager() {
 
+		// Actually can survive without context
 		this.context = createInitialContext();
 
 		LOGGER.info("Starting database connection pool");
@@ -79,6 +80,7 @@ public class TransactionManager {
 	}
 
 	public UserTransaction getUserTransaction() {
+		// return TransactionManagerServices.getTransactionManager();
 		try {
 			return (UserTransaction) this.context.lookup("java:comp/UserTransaction");
 		} catch (Exception e) {
@@ -89,6 +91,7 @@ public class TransactionManager {
 	public DataSource getDataSource() {
 		try {
 			String name = this.ds.getUniqueName();
+			// Check if ds and this.context.lookup(name) are the same
 			return (DataSource) this.context.lookup(name);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -106,6 +109,7 @@ public class TransactionManager {
 		try {
 			int status = tx.getStatus();
 			if (status == Status.STATUS_ACTIVE || status == Status.STATUS_MARKED_ROLLBACK) {
+				LOGGER.error("Rolling back transaction");
 				tx.rollback();
 			}
 		} catch (Exception e) {
