@@ -14,6 +14,15 @@ import bitronix.tm.Configuration;
 import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.resource.jdbc.PoolingDataSource;
 
+/**
+ * Provides a database connection pool with the Bitronix JTA transaction manager
+ * (http://docs.codehaus.org/display/BTM/Home).
+ * <p>
+ * Hibernate will look up the datasource and <code>UserTransaction</code>
+ * through JNDI, that's why you also need a <code>jndi.properties</code> file. A
+ * minimal JNDI context is bundled with and started by Bitronix.
+ * </p>
+ */
 public class TransactionManager {
 
 	private static final String SERVER_ID = "myServer1234";

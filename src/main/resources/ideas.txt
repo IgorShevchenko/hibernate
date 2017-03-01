@@ -9,4 +9,5 @@ Ideas:
 7. Property exceptions
 8. Load item without any bids, npe
 9. C:\java\workspace\hibernate-examples\examples\src\test\java\org\jpwh\test\simple
-10. 
+10. Hibernate metadata
+11. queries.xml

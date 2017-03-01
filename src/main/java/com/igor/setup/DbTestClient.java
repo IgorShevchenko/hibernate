@@ -14,7 +14,9 @@ import javax.transaction.UserTransaction;
 
 /**
  * Every interaction with your database should occur within explicit transaction
- * boundaries, even if you are only reading data.
+ * boundaries, even if you are only reading data. Creates an
+ * EntityManagerFactory. Configuration of the persistence units is taken from
+ * <code>META-INF/persistence.xml</code> and other sources.
  */
 public class DbTestClient implements Closeable {
 

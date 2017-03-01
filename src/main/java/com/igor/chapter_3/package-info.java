@@ -2,6 +2,8 @@
 // Otherwise need to put annotation on some MyNamedQueries.java class as part of domain model or in XML file.
 // Can put them into separate mapping XML file?
 
+
+// TODO: try to put in file
 @org.hibernate.annotations.NamedQueries({
     @org.hibernate.annotations.NamedQuery(
         name = "findItemsOrderByName",

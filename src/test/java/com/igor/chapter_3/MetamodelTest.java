@@ -95,7 +95,26 @@ public class MetamodelTest {
 		});
 
 		// SECOND WAY, type-safe, requires annotation processor
-		
+		client.executeTransaction((EntityManager em) -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Item> query = cb.createQuery(Item.class);
+
+			Root<Item> fromItem = query.from(Item.class);
+			Path<String> namePath = fromItem.get(Item_.name);
+
+			String nameParameter = "namePattern";
+			query.where(cb.like(namePath, cb.parameter(String.class, nameParameter)));
+			query.select(fromItem);
+
+			List<Item> itemsDb = em.createQuery(query)
+					.setParameter(nameParameter, "%item one%")
+					.getResultList();
+
+			Assertions.assertThat(itemsDb).hasSize(1);
+			Assertions.assertThat(itemsDb.get(0).getName()).isEqualTo(item1.getName());
+		});
+
 		client.close();
 	}
 

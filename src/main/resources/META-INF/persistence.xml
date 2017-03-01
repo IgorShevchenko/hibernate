@@ -35,6 +35,9 @@
 				SQL statement -->
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />
+
+			<!-- Ignore hbm.xml files and annotated classes -->
+			<property name="hibernate.archive.autodetection" value="none" />
 		</properties>
 
 	</persistence-unit>
@@ -54,6 +57,7 @@
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />
 			<property name="hibernate.archive.autodetection" value="none" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57InnoDBDialect" />
 		</properties>
 	</persistence-unit>
 
@@ -74,9 +78,8 @@
 				value="drop-and-create" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />
-
-			<!-- Ignore hbm.xml files and annotated classes -->
 			<property name="hibernate.archive.autodetection" value="none" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57InnoDBDialect" />
 		</properties>
 	</persistence-unit>
 
@@ -90,6 +93,7 @@
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />
 			<property name="hibernate.archive.autodetection" value="none" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57InnoDBDialect" />
 		</properties>
 	</persistence-unit>
 
@@ -109,6 +113,7 @@
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />
 			<property name="hibernate.archive.autodetection" value="none" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57InnoDBDialect" />
 		</properties>
 	</persistence-unit>
 
