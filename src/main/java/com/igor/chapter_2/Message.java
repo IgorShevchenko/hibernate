@@ -18,7 +18,7 @@ public class Message {
 	 */
 	@Id
 	@GeneratedValue
-	private int id;
+	private Integer id;
 
 	/*
 	 * You usually implement regular attributes of a persistent class with
@@ -27,6 +27,10 @@ public class Message {
 	 */
 	private String text;
 
+	public int getId() {
+		return id;
+	}
+	
 	public String getText() {
 		return text;
 	}

@@ -1,8 +1,5 @@
 package com.igor.setup;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.transaction.Status;
 import javax.transaction.UserTransaction;
@@ -20,7 +17,8 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
  * <p>
  * Hibernate will look up the datasource and <code>UserTransaction</code>
  * through JNDI, that's why you also need a <code>jndi.properties</code> file. A
- * minimal JNDI context is bundled with and started by Bitronix.
+ * minimal JNDI context is bundled with and started by Bitronix. Must use XA
+ * data source.
  * </p>
  */
 public class TransactionManager {
@@ -34,13 +32,9 @@ public class TransactionManager {
 		return INSTANCE;
 	}
 
-	private final Context context;
 	private final PoolingDataSource ds;
 
 	private TransactionManager() {
-
-		// Actually can survive without context
-		this.context = createInitialContext();
 
 		LOGGER.info("Starting database connection pool");
 		Configuration configuration = TransactionManagerServices.getConfiguration();
@@ -80,31 +74,16 @@ public class TransactionManager {
 		this.ds.init();
 	}
 
-	private static InitialContext createInitialContext() {
-		try {
-			return new InitialContext();
-		} catch (NamingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public UserTransaction getUserTransaction() {
-		// return TransactionManagerServices.getTransactionManager();
-		try {
-			return (UserTransaction) this.context.lookup("java:comp/UserTransaction");
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		// Context context = new InitialContext();
+		// return (UserTransaction) context.lookup("java:comp/UserTransaction");
+		return TransactionManagerServices.getTransactionManager();
 	}
 
 	public DataSource getDataSource() {
-		try {
-			String name = this.ds.getUniqueName();
-			// Check if ds and this.context.lookup(name) are the same
-			return (DataSource) this.context.lookup(name);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		// Context context = new InitialContext();
+		// return (DataSource) context.lookup(this.ds.getUniqueName());
+		return this.ds;
 	}
 
 	public void stop() throws Exception {
@@ -115,6 +94,10 @@ public class TransactionManager {
 
 	public static void rollback() {
 		UserTransaction tx = INSTANCE.getUserTransaction();
+		TransactionManager.rollback(tx);
+	}
+
+	public static void rollback(UserTransaction tx) {
 		try {
 			int status = tx.getStatus();
 			if (status == Status.STATUS_ACTIVE || status == Status.STATUS_MARKED_ROLLBACK) {

@@ -2,7 +2,11 @@ package com.igor.chapter_3;
 
 import java.util.List;
 
+import javax.persistence.PersistenceException;
+import javax.transaction.RollbackException;
+
 import org.assertj.core.api.Assertions;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Test;
 
 import com.igor.setup.DbTestClient;
@@ -35,7 +39,41 @@ public class UserTest {
 
 		// Assertion
 		Assertions.assertThat(usersDb).hasSize(1);
-		Assertions.assertThat(usersDb.get(0)).isEqualToComparingFieldByFieldRecursively(user);
+		User userDb = usersDb.get(0);
+
+		Assertions.assertThat(userDb).isEqualToComparingFieldByFieldRecursively(user);
+		Assertions.assertThat(userDb.getBillingAddress().getCity()).isEqualTo(billingAddress.getCity());
+
+		client.close();
+	}
+
+	@Test
+	public void shouldFailToPersist() throws Exception {
+
+		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT);
+
+		User user = new User();
+		user.setUsername("Igor");
+
+		// Null is not allowed for the home city
+		Address homeAddress = new Address("Home street", "11111", null);
+		user.setHomeAddress(homeAddress);
+
+		Address billingAddress = new Address(null, null, null);
+		user.setBillingAddress(billingAddress);
+
+		// Save user to the database
+		try {
+
+			// Hibernate will rollback transaction automatically
+			client.persist(user);
+			
+			// With em.flush() our finally-rollback will handle it
+			
+		} catch (RollbackException e) {
+			Assertions.assertThat(e).hasCauseInstanceOf(PersistenceException.class);
+			Assertions.assertThat(e.getCause()).hasCauseInstanceOf(ConstraintViolationException.class);
+		}
 
 		client.close();
 	}

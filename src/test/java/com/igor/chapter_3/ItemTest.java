@@ -12,6 +12,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,8 +21,22 @@ import com.igor.setup.DbTestClient;
 
 public class ItemTest {
 
+	/**
+	 * Declares only class definition in persistence unit, no XML files.
+	 * Includes package-info.java
+	 */
 	private static final String PERSISTENCE_UNIT = "Chapter3";
+
+	/**
+	 * Declares <b>metadata complete</b> JPA XML mapping files: global
+	 * persistence metadata XML file, item metadata XML file, and named queries
+	 * XML file.
+	 */
 	private static final String PERSISTENCE_UNIT_JPA_XML = "Chapter3_JPA_XML";
+
+	/**
+	 * Defines only "item" HMB XML file.
+	 */
 	private static final String PERSISTENCE_UNIT_HMB_XML = "Chapter3_HBM_XML";
 
 	@Test
@@ -112,7 +127,7 @@ public class ItemTest {
 		item2Bid1.setAmount(BigDecimal.valueOf(10));
 		item2.addBid(item2Bid1);
 
-		// Save items to the database
+		// Save items to the database, order is important
 		client.persist(category, item1, item2, item1Bid1, item2Bid1);
 
 		// Load items from the database
@@ -121,14 +136,22 @@ public class ItemTest {
 
 			Item itemDb1 = itemsDb.get(0);
 
+			// Lazy loaded, initialized as a proxy. Select is not yet executed 
 			Category itemDb1Category = itemDb1.getCategory();
 			Date itemDb1AuctionEnd = itemDb1.getAuctionEnd();
 
+			// Select to fetch category is executed on getId()
+			Long categoryId = itemDb1Category.getId();
 			String categoryName = itemDb1Category.getName();
 
+			Assertions.assertThat(categoryId).isEqualTo(category.getId());
 			Assertions.assertThat(categoryName).isEqualTo(category.getName());
 			Assertions.assertThat(itemDb1AuctionEnd).isEqualTo(item1.getAuctionEnd());
 		});
+
+		// Verify if named queries form package-info.java are visible
+		List<Item> itemsQuery = client.executeNamedQuery("findItemsOrderByName_package", Item.class);
+		Assertions.assertThat(itemsQuery).isNotEmpty();
 
 		client.close();
 	}
@@ -158,6 +181,25 @@ public class ItemTest {
 		// BigDecimals are checked by compareTo
 		Assertions.assertThat(itemDb.getBuyNowPrice()).isEqualByComparingTo(item.getBuyNowPrice());
 
+		// Check results with NAMED QUERY
+		List<Item> itemsQuery1 = client.executeNamedQuery("findItems_queries.xml", Item.class);
+		List<Item> itemsQuery2 = client.executeNamedQuery("findItemsWithHints_queries.xml", Item.class);
+		Assertions.assertThat(itemsQuery1).hasSameSizeAs(itemsQuery2);
+
+		client.close();
+	}
+
+	@Test
+	public void shouldNotSeePackageInfoJava() throws Exception {
+
+		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT_JPA_XML);
+
+		ThrowingCallable throwing = () -> {
+			client.executeNamedQuery("findItemsOrderByName_package", Item.class);
+		};
+
+		Assertions.assertThatThrownBy(throwing).isInstanceOf(IllegalArgumentException.class);
+
 		client.close();
 	}
 
@@ -166,8 +208,12 @@ public class ItemTest {
 
 		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT_HMB_XML);
 
+		// Only category is mapped
+		Assertions.assertThat(client.getMetamodel().getManagedTypes()).hasSize(1);
+
 		// Item
 		Item item = new Item();
+		item.version = 5;
 		item.setName("item");
 		item.setBuyNowPrice(BigDecimal.TEN);
 		item.setAuctionEnd(new Date(System.currentTimeMillis() + 10000));
@@ -178,14 +224,19 @@ public class ItemTest {
 		// Load item from the database
 		Item itemDb = client.select(Item.class, item.getId());
 
-		// Version is not persisted, default value
-		Assertions.assertThat(itemDb.version).isEqualTo(1);
+		// Version is not mapped, not persisted, default value 
+		Assertions.assertThat(itemDb.version).isNotEqualTo(item.version).isEqualTo(1);
 
-		// BuyNowPrice is not persisted
+		// BuyNowPrice is not mapped, not persisted
 		Assertions.assertThat(itemDb.getBuyNowPrice()).isNull();
 
 		Assertions.assertThat(itemDb.getName()).isEqualTo(item.getName());
 		Assertions.assertThat(itemDb.getAuctionEnd()).isEqualTo(item.getAuctionEnd());
+
+		// Check results with NAMED QUERY
+		List<Item> itemsQuery1 = client.executeNamedQuery("findItems_HBMXML", Item.class);
+		List<Item> itemsQuery2 = client.executeNamedQuery("findItemsOrderByIdDesc_HBMXML", Item.class);
+		Assertions.assertThat(itemsQuery1).hasSameSizeAs(itemsQuery2).hasSize(1);
 
 		client.close();
 	}

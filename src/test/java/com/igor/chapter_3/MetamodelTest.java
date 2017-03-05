@@ -31,6 +31,7 @@ public class MetamodelTest {
 
 		Metamodel metamodel = client.getMetamodel();
 
+		// Describes only Item
 		Set<ManagedType<?>> managedTypes = metamodel.getManagedTypes();
 		Assertions.assertThat(managedTypes).hasSize(1);
 
@@ -50,7 +51,7 @@ public class MetamodelTest {
 		// Item auctionEnd
 		SingularAttribute<?, ?> auctionEndAttribute = managedType.getSingularAttribute("auctionEnd");
 		Assertions.assertThat(auctionEndAttribute.getJavaType()).isEqualTo(Date.class);
-		Assertions.assertThat(nameAttribute.getPersistentAttributeType())
+		Assertions.assertThat(auctionEndAttribute.getPersistentAttributeType())
 				.isEqualTo(Attribute.PersistentAttributeType.BASIC);
 		Assertions.assertThat(auctionEndAttribute.isCollection()).isFalse();
 		Assertions.assertThat(auctionEndAttribute.isAssociation()).isFalse();
@@ -94,7 +95,7 @@ public class MetamodelTest {
 			Assertions.assertThat(itemsDb.get(0).getName()).isEqualTo(item1.getName());
 		});
 
-		// SECOND WAY, type-safe, requires annotation processor
+		// SECOND WAY, type-safe, STATIC metamodel, requires annotation processor
 		client.executeTransaction((EntityManager em) -> {
 
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -103,13 +104,11 @@ public class MetamodelTest {
 			Root<Item> fromItem = query.from(Item.class);
 			Path<String> namePath = fromItem.get(Item_.name);
 
-			String nameParameter = "namePattern";
-			query.where(cb.like(namePath, cb.parameter(String.class, nameParameter)));
+			// Hard-coded parameter
+			query.where(cb.like(namePath, "%item one%"));
 			query.select(fromItem);
 
-			List<Item> itemsDb = em.createQuery(query)
-					.setParameter(nameParameter, "%item one%")
-					.getResultList();
+			List<Item> itemsDb = em.createQuery(query).getResultList();
 
 			Assertions.assertThat(itemsDb).hasSize(1);
 			Assertions.assertThat(itemsDb.get(0).getName()).isEqualTo(item1.getName());

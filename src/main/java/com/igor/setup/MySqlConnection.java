@@ -19,6 +19,10 @@ class MySqlConnection {
 	}
 
 	public static void configure(PoolingDataSource ds) {
+		// MySQL XA support is completely broken, we use the BTM XA wrapper
+		// We can't enlist two non-XA connections in the same transaction
+		// on MySQL. XA is broken in MySQL, so we have to use the Bitronix XA wrapper, it can
+		// only handle one non-XA resource per transaction
 		// ds.setClassName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
 		ds.setClassName("bitronix.tm.resource.jdbc.lrc.LrcXADataSource");
 		Properties driverProperties = ds.getDriverProperties();

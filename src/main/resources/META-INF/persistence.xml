@@ -12,6 +12,9 @@
 			data source by name with a JNDI lookup on startup -->
 		<jta-data-source>myDS</jta-data-source>
 
+		<!-- Can also be non JTA data source for local transaction -->
+		<!-- <non-jta-data-source></non-jta-data-source> -->
+
 		<!-- A persistent unit has persistent (mapped) classes, you list them here -->
 		<class>com.igor.chapter_2.Message</class>
 
@@ -44,6 +47,11 @@
 
 	<persistence-unit name="Chapter3">
 		<jta-data-source>myDS</jta-data-source>
+
+		<!-- This includes package-info.java. This does not include other classes -->
+		<class>com.igor.chapter_3</class>
+
+		<!-- Classes inside package still need to be listed -->
 		<class>com.igor.chapter_3.Item</class>
 		<class>com.igor.chapter_3.Bid</class>
 		<class>com.igor.chapter_3.Category</class>
@@ -67,6 +75,7 @@
 		<!-- Don't need to list classes here: XML mappings will override them -->
 		<mapping-file>chapter_3/pu-metadata.xml</mapping-file>
 		<mapping-file>chapter_3/item-metadata.xml</mapping-file>
+		<mapping-file>chapter_3/queries.xml</mapping-file>
 
 		<!-- Can list extra classes here if "xml-mapping-metadata-complete" is 
 			not set, these classes will be mapped by annotations, and overriden by XML 

@@ -28,12 +28,24 @@
 		DBMS product, dynamic persistence context filters, and so on -->
 
 	<!-- Externalized queries -->
-	<query name="findItemsHBMXML">select i from Item i</query>
+	<query name="findItems_HBMXML">select i from Item i</query>
 
+	<!-- Can define native-Hibernate query here, or in package-info.java, or 
+		in JPA XML using hints -->
+    <query name="findItemsOrderByIdDesc_HBMXML"
+           cache-mode="ignore"
+           comment="Custom SQL comment in HBMXML"
+           fetch-size="50"
+           read-only="true"
+           timeout="60">
+           
+        select i from Item i order by i.id desc
+    </query>
+    
 	<!-- Auxiliary schema DDL -->
 	<database-object>
-		<create>create index ITEM_NAME_IDX on ITEM(NAME)</create>
-		<drop>alter table ITEM drop index ITEM_NAME_IDX</drop>
+		<create>create index ITEM_NAME_IDX on Item(NAME)</create>
+		<drop>alter table Item drop index ITEM_NAME_IDX</drop>
 	</database-object>
 
 </hibernate-mapping>
