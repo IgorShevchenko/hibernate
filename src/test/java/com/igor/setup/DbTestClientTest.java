@@ -294,7 +294,7 @@ public class DbTestClientTest {
 			 * Item. If you call getReference(), Hibernate will attempt to avoid
 			 * the SELECT and return a proxy
 			 */
-			Item itemDB = em.find(Item.class, item.getId());
+			Item itemDb = em.find(Item.class, item.getId());
 			// SELECT is executed, but not for reference-proxy
 
 			/*
@@ -308,14 +308,14 @@ public class DbTestClientTest {
 			 * through these interceptors to complete its full life cycle
 			 */
 			// itemDb is detached
-			em.remove(itemDB);
+			em.remove(itemDb);
 			// SELECT is executed for reference-proxy
 
 			/*
 			 * An entity in removed state is no longer in persistent state, this
 			 * can be checked with the contains() operation
 			 */
-			Assertions.assertThat(em.contains(itemDB)).isFalse();
+			Assertions.assertThat(em.contains(itemDb)).isFalse();
 
 			/*
 			 * You can make the removed instance persistent again, canceling the
@@ -345,11 +345,11 @@ public class DbTestClientTest {
 			// Check that item was deleted
 			tx.begin();
 			em = emf.createEntityManager();
-			itemDB = em.find(Item.class, item.getId());
+			itemDb = em.find(Item.class, item.getId());
 			tx.commit();
 			em.close();
 
-			Assertions.assertThat(itemDB).isNull();
+			Assertions.assertThat(itemDb).isNull();
 		} finally {
 			TransactionManager.rollback(tx);
 			client.close();
