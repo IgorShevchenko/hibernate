@@ -109,6 +109,7 @@ public class DbTestClient implements Closeable {
 	 * tracked.
 	 * 
 	 * @param entities
+	 *            Entities to persist.
 	 * @throws Exception
 	 */
 	public void persist(Object... entities) throws Exception {
