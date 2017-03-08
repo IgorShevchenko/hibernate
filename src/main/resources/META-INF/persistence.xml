@@ -1,15 +1,15 @@
-<persistence version="2.1"
-	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
                             http://xmlns.jcp.org/xml/ns/persistence_2_1.xsd">
 
-	<!-- The <code>persistence.xml</code> file configures at least one persistence 
-		unit; each unit must have a unique name -->
+	<!-- The <code>persistence.xml</code> file configures at least one persistence unit; each 
+		unit must have a unique name -->
 	<persistence-unit name="Chapter2">
 
-		<!-- Each persistence unit must have a database connection. Here you delegate 
-			to an existing <code>java.sql.DataSource</code>. Hibernate will find the 
-			data source by name with a JNDI lookup on startup -->
+		<!-- Each persistence unit must have a database connection. Here you delegate to an existing 
+			<code>java.sql.DataSource</code>. Hibernate will find the data source by name with a JNDI lookup 
+			on startup -->
 		<jta-data-source>myDS</jta-data-source>
 
 		<!-- Can also be non JTA data source for local transaction -->
@@ -18,24 +18,22 @@
 		<!-- A persistent unit has persistent (mapped) classes, you list them here -->
 		<class>com.igor.chapter_2.Message</class>
 
-		<!-- Hibernate can scan your classpath for mapped classes and add them 
-			automatically to your persistence unit. This setting disables that feature -->
+		<!-- Hibernate can scan your classpath for mapped classes and add them automatically to your 
+			persistence unit. This setting disables that feature -->
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
-		<!-- Standard or vendor-specific options can be set as properties on a 
-			persistence unit. Any standard properties have the <code>javax.persistence</code> 
-			name prefix, Hibernate's settings use <code>hibernate</code> -->
+		<!-- Standard or vendor-specific options can be set as properties on a persistence unit. 
+			Any standard properties have the <code>javax.persistence</code> name prefix, Hibernate's settings 
+			use <code>hibernate</code> -->
 		<properties>
 
-			<!-- The JPA engine should drop and re-create the SQL schema in the database 
-				automatically when it boots. This is ideal for automated testing, when you 
-				want to work with a clean database for every test run -->
-			<property name="javax.persistence.schema-generation.database.action"
-				value="drop-and-create" />
+			<!-- The JPA engine should drop and re-create the SQL schema in the database automatically 
+				when it boots. This is ideal for automated testing, when you want to work with a clean database 
+				for every test run -->
+			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
 
-			<!-- When printing SQL in logs, let Hibernate format the SQL nicely and 
-				generate comments into the SQL string so we know why Hibernate executed the 
-				SQL statement -->
+			<!-- When printing SQL in logs, let Hibernate format the SQL nicely and generate comments 
+				into the SQL string so we know why Hibernate executed the SQL statement -->
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />
 
@@ -60,8 +58,7 @@
 		<class>com.igor.chapter_3.UserName</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
-			<property name="javax.persistence.schema-generation.database.action"
-				value="drop-and-create" />
+			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />
 			<property name="hibernate.archive.autodetection" value="none" />
@@ -77,14 +74,13 @@
 		<mapping-file>chapter_3/item-metadata.xml</mapping-file>
 		<mapping-file>chapter_3/queries.xml</mapping-file>
 
-		<!-- Can list extra classes here if "xml-mapping-metadata-complete" is 
-			not set, these classes will be mapped by annotations, and overriden by XML 
-			metadata, if these classes are also listed there -->
+		<!-- Can list extra classes here if "xml-mapping-metadata-complete" is not set, these classes 
+			will be mapped by annotations, and overriden by XML metadata, if these classes are also listed 
+			there -->
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
-			<property name="javax.persistence.schema-generation.database.action"
-				value="drop-and-create" />
+			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />
 			<property name="hibernate.archive.autodetection" value="none" />
@@ -97,8 +93,7 @@
 		<mapping-file>chapter_3/category-metadata-override.xml</mapping-file>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
-			<property name="javax.persistence.schema-generation.database.action"
-				value="drop-and-create" />
+			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />
 			<property name="hibernate.archive.autodetection" value="none" />
@@ -113,12 +108,23 @@
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
-			<property name="javax.persistence.schema-generation.database.action"
-				value="drop-and-create" />
+			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
 
 			<!-- Define Hibername native XML files -->
 			<property name="hibernate.hbmxml.files" value="chapter_3/item-metadata.hbm.xml" />
 
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.use_sql_comments" value="true" />
+			<property name="hibernate.archive.autodetection" value="none" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57InnoDBDialect" />
+		</properties>
+	</persistence-unit>
+
+	<persistence-unit name="Chapter4">
+		<jta-data-source>myDS</jta-data-source>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.use_sql_comments" value="true" />
 			<property name="hibernate.archive.autodetection" value="none" />

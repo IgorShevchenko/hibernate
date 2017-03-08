@@ -1,0 +1,36 @@
+Info for Chapter 4:
+
+- Hibernate is for fine-grained and rich Java domain models
+- More classes than tables
+- Classes have identity and lifecycle
+
+Entity type:
+- own identity
+- independent lifecycle
+- also many-to-one associations
+- also dependent life cycle, but has shared references
+
+Value type:
+- embeddable classes
+- bound to the owning entity instance
+- shouldn't have shared references
+
+Keep an eye on:
+- shared runtime references
+- avoid shared references to value types
+- life cycle dependencies require cascading delete rules
+- make everything a value typed class and promote it to an entity
+- instead of mapping collections, write queries to obtain them
+
+Identity:
+- primary key, configure key generators, identifier generator strategies
+- object identity: ==
+- object equality: equals
+- database identity: the same table and primary key value
+
+<delimited-identifiers>
+
+
+Mentions:
+- Item, Category, User, Address, Address.setItem()
+- USERS
