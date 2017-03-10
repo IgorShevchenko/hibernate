@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import com.igor.chapter_3.Category;
 import com.igor.chapter_3.Item;
-import com.igor.chapter_3.Item_;
 
 import bitronix.tm.internal.BitronixRollbackException;
 
@@ -142,7 +141,7 @@ public class DbTestClientTest {
 			/*
 			 * Item category (lazy fetch) is not loaded
 			 */
-			boolean isLoadedItemCategory = persistenceUnitUtil.isLoaded(itemReference, Item_.category.getName());
+			boolean isLoadedItemCategory = persistenceUnitUtil.isLoaded(itemReference, "category");
 			Assertions.assertThat(isLoadedItemCategory).isFalse();
 
 			String nameDb = itemReference.getName();
