@@ -29,18 +29,13 @@ Identity:
 - database identity: the same table and primary key value
 
 <delimited-identifiers>
-
+Hibernate then enforces quoted identifiers everywhere.
+Or can quote only keywords with hibernate.auto_quote_keyword=true in your persistence unit 
 
 Mentions:
 - Item, Category, User, Address, Address.setItem()
 - USERS
 - model/package-info.java
-
-
-
-
-DO READ:
-
 
 You also need an @Id annotation,
 Every entity class has to have an @Id property;
@@ -110,9 +105,124 @@ whether an item is new, a null check is probably easier to understand
 
 You shouldn’t use another integral type such as int or short for identifiers.
 
+If you require consistent portable behavior, and identifier values to be available before 
+INSERTs, use enhanced-sequence, as shown in the previous section. 
+This is a portable, flexible, and modern strategy, also offering various optimizers for large datasets.
 
 
+An ORM service tries to optimize SQL INSERTs: for example, by batching several at
+the JDBC level. Hence, SQL execution occurs as late as possible during a unit of
+work, not when you call entityManager.persist(someItem). This merely queues
+the insertion for later execution and, if possible, assigns the identifier value. But if
+you now call someItem.getId(), you might get null back if the engine wasn’t able
+to generate an identifier before the INSERT. 
 
+In general, we prefer pre-insert generation strategies that produce identifier values 
+independently, before INSERT. A common choice is a shared and concurrently accessible 
+database sequence. Autoincremented columns, column default values, or 
+trigger-generated keys are only available after the INSERT.
 
+=> org.hibernate.id.enhanced.SequenceStyleGenerator
+enhanced-sequence supports an org.hibernate.id.enhanced.Optimizer to 
+avoid hitting the database before each INSERT; defaults to no optimization and 
+fetching a new value for each INSERT. For all parameters, see the Javadoc for the
+class org.hibernate.id.enhanced.SequenceStyleGenerator. Equivalent to JPA
+GenerationType.SEQUENCE and GenerationType.AUTO with the New mapping
+enabled, most likely your best option of the built-in strategies.
 
+=> org.hibernate.id.enhanced.TableGenerator
+enhanced-table — Uses an extra table named HIBERNATE_SEQUENCES, with one
+row by default representing the sequence, storing the next value. This value is
+selected and updated when an identifier value has to be generated. You can
+configure this generator to use multiple rows instead: one for each generator;
+see the Javadoc for org.hibernate.id.enhanced.TableGenerator. Equivalent
+to JPA GenerationType.TABLE with the New mapping enabled.
 
+increment — At Hibernate startup, reads the maximum (numeric) primary key
+column value of each entity’s table and increments the value by one each time a
+new row is inserted. Especially efficient if a non-clustered Hibernate application
+has exclusive access to the database; but don’t use it in any other scenario.
+
+uuid2 — Produces a unique 128-bit UUID in the application layer. Useful when
+you need globally unique identifiers across databases.
+
+guid — Uses a globally unique identifier produced by the database, before an INSERT.
+
+To summarize, our recommendations on identifier generator strategies are as follows:
+- In general, we prefer pre-insert generation strategies that produce identifier
+values independently before INSERT.
+- Use enhanced-sequence, which uses a native database sequence when supported
+and otherwise falls back to an extra database table with a single column
+and row, emulating a sequence.
+
+class-level options:
+- Naming defaults and strategies
+- Dynamic SQL generation
+- Entity mutability
+
+From time to time, especially in legacy databases, you’ll encounter identifiers with
+strange characters or whitespace, or wish to force case sensitivity, or is a reserved keyword.
+
+Hibernate 5 knows the reserved keywords of your DBMS through the configured
+database dialect. Hibernate 5 can automatically put quotes around such strings when
+generating SQL. You can enable this automatic quoting with 
+hibernate.auto_quote_keyword=true in your persistence unit configuration.
+
+delimited identifiers
+@Table(name = "\"USER\"")
+
+You should consider renaming tables or columns with reserved keyword names
+whenever possible. Ad hoc SQL queries are difficult to write in an SQL console.
+
+PhysicalNamingStrategy interface;
+it offers methods for custom naming of columns, sequences, and other artifacts.
+You have to enable the naming-strategy implementation in persistence.xml
+<property name="hibernate.physical_naming_strategy" value="com.igor.setup.IgorNamingStrategy"/>
+
+A second option for naming customization is ImplicitNamingStrategy. Whereas the
+physical naming strategy acts at the lowest level, when schema artifact names are ultimately
+produced, the implicit-naming strategy is called before. If you map an entity
+class and don’t have an @Table annotation with an explicit name, the implicit-naming
+strategy implementation is asked what the table name should be. This is based on factors
+such as the entity name and class name. Hibernate ships with several strategies to
+implement legacy- or JPA-compliant default names. The default strategy is 
+ImplicitNamingStrategyJpaCompliantImpl.
+
+you can use short class names without a package prefix in JPA query strings.
+If you add another Item class in a different package, you should rename one of them for JPA.
+Of course, you can always use fully qualified long names with the package prefix.
+
+By default, Hibernate creates SQL statements for each persistent class when the persistence
+unit is created, on startup. These statements are simple create, read, update,
+and delete (CRUD) operations for reading a single row, deleting a row, and so on. It’s
+cheaper to store these in memory up front, instead of generating SQL strings every
+time such a simple query has to be executed at runtime. In addition, prepared statement
+caching at the JDBC level is much more efficient if there are fewer statements.
+
+generated SQL statement updates all columns, and if the value of a particular column isn’t 
+modified, the statement sets it to its old value.
+
+In some situations, such as a legacy table with hundreds of columns where the SQL
+statements will be large for even the simplest operations (say, only one column needs
+updating), you should disable this startup SQL generation and switch to dynamic statements
+generated at runtime. An extremely large number of entities can also impact
+startup time, because Hibernate has to generate all SQL statements for CRUD up front.
+Memory consumption for this query statement cache will also be high if a dozen statements
+must be cached for thousands of entities. This can be an issue in virtual environments
+with memory limitations, or on low-power devices.
+
+@org.hibernate.annotations.DynamicInsert
+@org.hibernate.annotations.DynamicUpdate
+
+By enabling dynamic insertion and updates, you tell Hibernate to produce the SQL
+strings when needed, not up front. The UPDATE will only contain columns with
+updated values, and the INSERT will only contain non-nullable columns.
+
+Instances of a particular class may be immutable. For example, a Bid made for an item 
+is immutable. Hence, Hibernate never needs to execute UPDATE statements on the BID table. 
+Hibernate can also make a few other optimizations, such as avoiding dirty checking.
+Can be applied on the class, field, or collections. See also @Column(updatable = false)
+Can't make final fields. 
+
+Hibernate doesn’t flush automatically before a find() operation — only
+before a Query is executed, if necessary.

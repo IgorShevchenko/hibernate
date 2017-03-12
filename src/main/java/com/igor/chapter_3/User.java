@@ -13,7 +13,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "USERS")
+// Override the table name
+// The User entity would map to the USER table; a reserved keyword in most SQL DBMSs
+// Also has catalog and schema options, if your database layout requires these as naming prefixes
+@Table(name = "USERS", schema = "hibernate_db")
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;

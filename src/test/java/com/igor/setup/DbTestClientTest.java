@@ -537,7 +537,7 @@ public class DbTestClientTest {
 			Item itemDb1 = em.find(Item.class, item.getId());
 			itemDb1.setName("New Name");
 
-			// Set COMMIT flush mode
+			// Set AUTO flush mode (DEFAULT)
 			em.setFlushMode(FlushModeType.AUTO);
 
 			// With default flush mode, dirty changes are flushed

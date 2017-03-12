@@ -22,7 +22,15 @@ public class ItemTest {
 		item1.setName("item-1");
 		item2.setName("item-2");
 
-		client.persist(item1, item2);
+		client.executeTransaction(em -> {
+
+			em.persist(item1);
+			Assertions.assertThat(item1.getId()).isNotNull();
+
+			em.persist(item2);
+			Assertions.assertThat(item2.getId()).isNotNull();
+
+		});
 
 		List<Item> items = client.selectAll(Item.class);
 

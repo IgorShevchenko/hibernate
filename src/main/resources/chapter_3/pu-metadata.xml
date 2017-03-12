@@ -14,7 +14,9 @@
 		<persistence-unit-defaults>
 
 			<!-- Escape all SQL column/table/etc. names, e.g. if your SQL names are 
-				actually keywords (a "USER" table for example) -->
+				actually keywords (a "USER" table for example). Hibernate then enforces quoted 
+				identifiers everywhere. Or can quote only keywords with hibernate.auto_quote_keyword=true 
+				in your persistence unit -->
 			<delimited-identifiers />
 
 		</persistence-unit-defaults>
