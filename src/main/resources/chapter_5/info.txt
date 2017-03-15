@@ -1,0 +1,113 @@
+Info for Chapter 5:
+
+- Mapping basic properties
+- Mapping embeddable components
+- Controlling mapping between Java and SQL types
+
+basic value-typed classes that come with the JDK, such as String, Date, primitives, and their wrappers
+developer defined value-typed classes, such as Address and MonetaryAmount
+
+overriding defaults, customizing access, and generated values.
+SQL is used with derived properties and transformed column values.
+We wrap up basic properties with temporal properties and mapping enumerations.
+We then discuss custom value-typed classes and map them as embeddable components. 
+You learn how classes relate to the database schema and make your classes embeddable,
+while allowing for overriding embedded attributes. We complete embeddable
+components by mapping nested components. Finally, we discuss how to customize
+loading and storing of property values at a lower level with flexible JPA converters.
+
+Converter API for basic-typed attributes, so you can control how
+values are loaded and stored and transform them if necessary.
+
+All of entity (or embeddable type) 's properties are considered persistent by default.
+Hibernate loads and stores the value of the property in a column with an appropriate SQL type and the same name as the property.
+
+???
+Annotate the class of the property as @Embeddable, or map the property itself as @Embedded
+Address and MonetaryAmount
+
+Otherwise, if the type of the property is java.io.Serializable, its value is stored in its serialized form. 
+This typically isn’t what you want, and you should always map Java classes instead of storing a heap of bytes in the database.
+
+Otherwise, Hibernate will throw an exception on startup, complaining that it doesn’t understand the type of the property.
+This configuration by exception approach means you don’t have to annotate a property to
+make it persistent; you only have to configure the mapping in an exceptional case.
+
+To exclude a property, mark the field or the getter method of the property with the
+@javax.persistence.Transient annotation or use the Java transient keyword. 
+The transient keyword usually only excludes fields for Java serialization, but it’s also recognized by JPA providers.
+
+@Basic(optional = false)
+Has two parameters: optional, marks the property as not optional at the Java object level.
+By default, all persistent properties are nullable and optional; an Item may have an
+unknown initialPrice. Mapping the initialPrice property as non-optional makes
+sense if you have a NOT NULL constraint on the INITIALPRICE column in your SQL
+schema. If Hibernate is generating the SQL schema, it will include a NOT NULL constraint
+automatically for non-optional properties.
+
+Hibernate will complain with an exception before hitting the database with an SQL
+statement. Hibernate knows that a value is required to perform an INSERT or UPDATE.
+If you don’t mark the property as optional and try to save a NULL, the database will
+reject the SQL statement, and Hibernate will throw a constraint-violation exception.
+There isn’t much difference in the end result, but it’s cleaner to avoid hitting the database
+with a statement that fails.
+
+@Column(nullable = false)
+Instead of @Basic, most engineers use the more versatile @Column annotation to declare nullability.
+
+Three ways to declare whether a property value is required: 
+1) @Basic(optional = false)
+2) @Column(nullable = false) 
+3) @NotNull Bean Validation
+All have the same effect on the JPA provider: Hibernate does a null check when saving, 
+and generates a NOT NULL constraint in the database schema. 
+org.hibernate.PropertyValueException:
+Insert is always executed for @Basic(optional = false) and @Column(nullable = false),
+if bean validation is enabled. Then it relies only on @NotNull.
+
+We recommend the Bean Validation @NotNull annotation so you can manually validate an Item instance 
+and/or have your user interface code in the presentation layer execute validation checks automatically.
+
+The persistence engine accesses the properties of a class either directly through fields or indirectly through 
+getter and setter methods. An annotated entity inherits the default from the position of the mandatory @Id annotation.
+Annotations are never on the setter methods.
+
+Any @Embedded class inherits the default or explicitly declared access strategy of its owning root entity class.
+
+Hibernate accesses any @MappedSuperclass properties with the default or explicitly declared 
+access strategy of the mapped entity class. Inherits mapped columns. Can override.
+
+Use @Access annotation for overriding the default behavior, with the parameters AccessType.FIELD and 
+AccessType.PROPERTY. If you set @Access on the class/entity level, Hibernate accesses all properties of 
+the class according to the selected strategy. You can also use the @Access annotation to override the 
+access strategy of individual properties. Annotations will be considered only if they placed according to 
+access strategy. When overriding access, annotations must be on the same element as @Access annotation.
+
+=> RARELY USED EXTENSION START
+The noop property accessor. It lets you refer to a virtual property in queries. This is useful if you 
+have a database column you’d like to use only in JPA queries. Domain model does not define it.
+It might be a legacy column or a column maintained by another application or database trigger. 
+The only way to map such a virtual property is with an hbm.xml native metadata file. 
+Remember that such a native mapping file has to be complete!
+
+If none of the built-in access strategies are appropriate, you can define your own customized property-access strategy 
+by implementing the interface org.hibernate.property.PropertyAccessor. You enable a custom accessor by setting its fully qualified
+name in a Hibernate extension annotation: @org.hibernate.annotations.AttributeAccessor("my.custom.Accessor").
+=> END
+
+Some properties don’t map to a column. In particular, a derived property takes its value from an SQL expression.
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

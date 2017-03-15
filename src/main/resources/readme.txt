@@ -11,3 +11,8 @@ In Eclipse setup 'Arguments' for 'Run Configurations' and 'Debug Configurations'
 3) SETUP ANNOTATION PROCESSING 
 Enable Maven -> Annotation Processing
 Automatically configure JDT APT
+
+4) MySQL all queries log
+SET GLOBAL general_log = 1;
+SHOW VARIABLES LIKE "general_log%";
+

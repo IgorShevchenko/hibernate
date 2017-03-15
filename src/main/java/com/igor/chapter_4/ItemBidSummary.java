@@ -6,6 +6,7 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
+import org.hibernate.annotations.Synchronize;
 
 /**
  * When an instance of ItemBidSummary is loaded, Hibernate executes your custom
@@ -19,10 +20,10 @@ import org.hibernate.annotations.Subselect;
 		"GROUP BY i.igor_id, i.igor_name")
 
 // Table names are case sensitive, Hibernate bug HHH-8430
-// As in the database, with physical naming strategy applied
+// As in the database, with physical naming strategy applied (igor_item, igor_bid)
 // Hibernate will then know it has to flush modifications of Item and Bid instances 
-// before it executes a query against ItemBidSummary
-@org.hibernate.annotations.Synchronize({ "item", "bid" })
+// before it executes a query against ItemBidSummary, but not applied to find()
+@Synchronize({ "item", "bid" })
 public class ItemBidSummary {
 
 	@Id

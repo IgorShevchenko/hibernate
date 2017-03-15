@@ -2,10 +2,14 @@ package com.igor.chapter_4.generated_value;
 
 import java.util.List;
 
+import javax.persistence.PersistenceException;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import com.igor.setup.DbTestClient;
+
+import bitronix.tm.internal.BitronixRollbackException;
 
 public class GenerationStrategyTest {
 
@@ -29,6 +33,24 @@ public class GenerationStrategyTest {
 
 		List<ItemNaturalId> items = client.selectAll(ItemNaturalId.class);
 		Assertions.assertThat(items).hasSize(2);
+
+		// Try to update natural key
+		// Updating primary key is NOT allowed
+		try {
+			client.executeTransaction(em -> {
+
+				ItemNaturalId itemDb = em.find(ItemNaturalId.class, item1.getId());
+				Assertions.assertThat(itemDb).isNotNull();
+
+				itemDb.setId(30);
+
+				em.persist(itemDb);
+			});
+			Assertions.fail("Should throw exception");
+		} catch (Exception e) {
+			Assertions.assertThat(e).isInstanceOf(BitronixRollbackException.class)
+					.hasCauseInstanceOf(PersistenceException.class);
+		}
 
 		client.close();
 	}

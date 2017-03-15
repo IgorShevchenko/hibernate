@@ -15,6 +15,7 @@ import javax.persistence.Transient;
  * class has separate firstName and lastName fields.
  */
 @Entity
+@Access(AccessType.FIELD)
 public class UserName {
 
 	@Id
@@ -27,12 +28,18 @@ public class UserName {
 	@Transient
 	private String lastName;
 
+	// Another way:
+	// @Access(value = AccessType.PROPERTY)
+	// @Column(name = "name")
+	// private String name;
+
 	public Long getId() {
 		return id;
 	}
 
 	@Access(value = AccessType.PROPERTY)
-	@Column(name = "name")
+	// Other annotations must also be here, otherwise will not be considered
+	@Column(name = "name_getter")
 	protected String getName() {
 		// Access type is defined by the position of the @Id or @EmbeddedId annotations
 		// Need to add logic => property access

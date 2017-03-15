@@ -133,13 +133,13 @@
 			<property name="hibernate.use_sql_comments" value="true" />
 			<property name="hibernate.archive.autodetection" value="none" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57InnoDBDialect" />
-			
+
 			<!-- Custom table/column naming strategy -->
-            <property name="hibernate.physical_naming_strategy" value="com.igor.setup.IgorNamingStrategy"/>
-            
+			<property name="hibernate.physical_naming_strategy" value="com.igor.setup.IgorNamingStrategy" />
+
 		</properties>
 	</persistence-unit>
-	
+
 	<persistence-unit name="Chapter4_generated_value">
 		<jta-data-source>myDS</jta-data-source>
 		<class>com.igor.chapter_4.generated_value.ItemNaturalId</class>
@@ -152,6 +152,24 @@
 			<property name="hibernate.use_sql_comments" value="true" />
 			<property name="hibernate.archive.autodetection" value="none" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57InnoDBDialect" />
+		</properties>
+	</persistence-unit>
+
+	<persistence-unit name="Chapter5">
+		<jta-data-source>myDS</jta-data-source>
+		<class>com.igor.chapter_5</class>
+		<class>com.igor.chapter_5.Item</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.use_sql_comments" value="true" />
+			<property name="hibernate.archive.autodetection" value="none" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57InnoDBDialect" />
+
+			<!-- Disable Bean Validation -->
+			<property name="javax.persistence.validation.mode" value="none" />
+			
 		</properties>
 	</persistence-unit>
 
