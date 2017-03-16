@@ -10,9 +10,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.Formula;
+
 @Entity
-// Annotations will be considered only if they placed according to access strategy.
-// When overriding access, annotations must be on the same element as @Access annotation.
+// Annotations will be considered only if they placed according to access
+// strategy.
+// When overriding access, annotations must be on the same element as @Access
+// annotation.
 @Access(AccessType.FIELD)
 public class Item {
 
@@ -31,6 +35,13 @@ public class Item {
 	@Column(nullable = false, name = "price")
 	private Double initialPrice;
 
+	// Can have a setter, but value will not be saved to database
+	// Syntax: "(SQL here)"
+	// select a, b, (select ... where b.item_id = id) from ... where id = ?
+	// Unqualified columns refer to entity table
+	@Formula("(SELECT count(*) FROM bid b WHERE b.item_id = id)")
+	private Integer bidCount;
+
 	public Integer getId() {
 		return id;
 	}
@@ -41,6 +52,10 @@ public class Item {
 
 	public void setInitialPrice(Double initialPrice) {
 		this.initialPrice = initialPrice;
+	}
+
+	public Integer getBidCount() {
+		return bidCount;
 	}
 
 }

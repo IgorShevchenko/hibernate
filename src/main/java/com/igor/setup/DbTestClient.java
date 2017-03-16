@@ -152,6 +152,24 @@ public class DbTestClient implements Closeable {
 			TransactionManager.rollback();
 		}
 	}
+	
+	public <T> T find(Class<T> entityClass, Object id) throws Exception {
+		try {
+			UserTransaction tx = this.tm.getUserTransaction();
+			tx.begin();
+
+			EntityManager em = this.emf.createEntityManager();
+
+			T entity = em.find(entityClass, id);
+
+			tx.commit();
+			em.close();
+
+			return entity;
+		} finally {
+			TransactionManager.rollback();
+		}
+	}
 
 	/**
 	 * Get all persisted entities, inside a single transaction. <b>Persistence

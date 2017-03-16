@@ -10,7 +10,7 @@ import org.hibernate.annotations.Synchronize;
 
 /**
  * When an instance of ItemBidSummary is loaded, Hibernate executes your custom
- * SQL SELECT as a subselect.
+ * SQL SELECT as a subselect. SELECT * FROM (subselect) WHERE itemId = ?.
  */
 @Entity
 @Immutable

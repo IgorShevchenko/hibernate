@@ -158,6 +158,7 @@
 	<persistence-unit name="Chapter5">
 		<jta-data-source>myDS</jta-data-source>
 		<class>com.igor.chapter_5</class>
+		<class>com.igor.chapter_5.Bid</class>
 		<class>com.igor.chapter_5.Item</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
