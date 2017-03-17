@@ -105,10 +105,41 @@ Formulas may refer to columns, they can call SQL functions, and they may even in
 Notice that unqualified column names refer to columns of the table of the class to which the derived property belongs.
 The database evaluates SQL expressions in formulas only when Hibernate retrieves an entity instance from the database. 
 
+@org.hibernate.annotations.ColumnTransformer
 Hibernate also supports a variation of formulas called column transformers, 
 allowing you to write a custom SQL expression for reading and writing a property value.
+Can convert the value of the database column when reading and writing a row.
+Has a single placeholder (the question mark).
+The calculation occurs in the database. SQL expression calculates the actual value to be inserted or updated.
+Hibernate also applies column converters in query restrictions. WHERE weight = 10 =====> WHERE weight_pounds * 2 = 10  
+Note that your database probably won’t be able to rely on an index for this restriction;
+you’ll see a full table scan, because the weight for all ITEM rows has to be calculated to
+evaluate the restriction.
+
+@org.hibernate.annotations.Generated
+Another special kind of property relies on database-generated values.
+Examples of database-generated values are a creation timestamp, a
+default price for an item, and a trigger that runs for every modification.
+Whenever Hibernate issues an SQL INSERT or UPDATE for an entity that has declared generated properties, it does a
+SELECT immediately afterward to retrieve the generated values for every generated property.
+Available settings for GenerationTime are ALWAYS and INSERT.
+
+ALWAYS => Hibernate refreshes the entity instance after every SQL UPDATE or INSERT. 
+Assume database trigger will keep the lastModified property current. 
+The property should also be marked read-only, with the updatable and insertable parameters of @Column.
+Also means column is not insertable/updatable, e.g. @Column(insertable = false, updatable = false)
+
+INSERT => refreshing only occurs after an SQL INSERT, to retrieve the default value provided by the database. 
+Also means column is not insertable, e.g. @Column(insertable = false) 
+
+@ColumnDefault 
+Sets the default value of the column when Hibernate exports and generates the SQL schema DDL.
 
 
+
+Timestamps are frequently automatically generated values, either by the database,
+as in the previous example, or by the application. Let’s have a closer look at the
+@Temporal annotation you saw in listing 5.4.
 
 
 
