@@ -204,10 +204,11 @@ By enabling dynamic insertion and updates, you tell Hibernate to produce the SQL
 strings when needed, not up front. The UPDATE will only contain columns with
 updated values, and the INSERT will only contain non-nullable columns.
 
+@Immutable
 Instances of a particular class may be immutable. For example, a Bid made for an item 
 is immutable. Hence, Hibernate never needs to execute UPDATE statements on the BID table. 
 Hibernate can also make a few other optimizations, such as avoiding dirty checking.
-Can be applied on the class, field, or collections. See also @Column(updatable = false)
+Can be applied on the class, field, or collections. Prefer @Column(updatable = false)
 Can't make final fields. 
 
 Hibernate doesn’t flush automatically before a find() operation — only before a Query is executed, if necessary.

@@ -17,3 +17,45 @@ Automatically configure JDT APT
 SET GLOBAL general_log = 1;
 SHOW VARIABLES LIKE "general_log%";
 
+
+
+@Access
+@AttributeOverride
+@AttributeOverrides
+@Basic
+@Column
+@ColumnDefault
+@ColumnTransformer
+@CreationTimestamp
+@DynamicInsert
+@DynamicUpdate
+@Embeddable
+@Embedded
+@EmbeddedId
+@Entity
+@Enumerated
+@Formula
+@Future
+@Generated
+@GeneratedValue
+@GenericGenerator
+@Id
+@Immutable
+@JoinColumn
+@ManyToOne
+@MappedSuperclass 
+@NamedQueries
+@NamedQuery
+@NotNull 
+@Parameter
+@SelectBeforeUpdate
+@Size
+@Subselect
+@Synchronize
+@Table
+@Temporal
+@Transient
+@UpdateTimestamp
+@Version
+
+

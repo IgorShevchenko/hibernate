@@ -1,0 +1,31 @@
+Info for Chapter 3 (+ part of 5):
+
+...
+
+Embedded component from Chapter 5
+
+More classes than tables is fine-grained domain models.
+Component class has no individual identity: requires no identifier or identifier mapping.
+The properties of the embeddable class are all by default persistent, just like in entity class.
+
+An embedded component has a dependent life cycle: 
+When the owning entity instance is saved, the component instance is saved. 
+When the owning entity instance is deleted, the component instance is deleted.
+
+Any @Embedded class inherits the default or explicitly declared access strategy of its owning root entity class.
+1) Can put access strategy on the embedded field of the owning class.
+2) Can (better should) specify access strategy for the embedded class.
+Hibernate expects annotations on the fields orproperties of the embedded class, 
+and reads/writes the fields directly or by calling getter and setter methods.
+
+Consider what would happen if all embedded fields are NULLs. Hibernate returns a
+null in this case. Hibernate also stores a null embedded property as NULL values in all
+mapped columns of the component. Consequently, if you store a User with an
+empty Address (you have an Address instance but all its properties are null), no
+Address instance will be returned when you load the User.
+
+Annotate the class of the property as @Embeddable, or map the property itself as @Embedded.
+In this case class will still work, only column annotations will be ignored, 
+and default values will be applied.
+
+

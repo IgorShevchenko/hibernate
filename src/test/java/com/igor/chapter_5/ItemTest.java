@@ -167,13 +167,13 @@ public class ItemTest {
 			TypedQuery<Item> query = em.createQuery("SELECT i FROM Item i WHERE weight = 10", Item.class);
 			Item itemDb = query.getSingleResult();
 			// where weight_pounds * 2 = 10
-			
+
 			Assertions.assertThat(itemDb).isNotNull();
 		});
 
 		client.close();
 	}
-	
+
 	@Test
 	public void shouldRetrieveGeneratedValueAfterUpdate() throws Exception {
 
@@ -182,9 +182,9 @@ public class ItemTest {
 		Item item = new Item();
 		item.setInitialPrice(10.0);
 		item.setWeight(10);
-		
+
 		// Ignored, non insertable
-		item.setAmount(12345); 
+		item.setAmount(12345);
 
 		client.persist(item);
 
@@ -193,8 +193,13 @@ public class ItemTest {
 			Item itemDb = em.find(Item.class, item.getId());
 			itemDb.setWeight(200);
 			
-			// 1) Dirty state updated. Generated values are not in UPDATE
-			// 2) Generated values are retrieved
+			// Has default value, still nullable
+			itemDb.setAmount(null);
+
+			// 3 SQL queries:
+			// 1) Get item
+			// 2) Dirty state updated. Generated values are not in UPDATE
+			// 3) Generated values are retrieved
 		});
 
 		client.close();

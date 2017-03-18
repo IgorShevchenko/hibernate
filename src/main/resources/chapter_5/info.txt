@@ -22,10 +22,6 @@ values are loaded and stored and transform them if necessary.
 All of entity (or embeddable type) 's properties are considered persistent by default.
 Hibernate loads and stores the value of the property in a column with an appropriate SQL type and the same name as the property.
 
-???
-Annotate the class of the property as @Embeddable, or map the property itself as @Embedded
-Address and MonetaryAmount
-
 Otherwise, if the type of the property is java.io.Serializable, its value is stored in its serialized form. 
 This typically isn’t what you want, and you should always map Java classes instead of storing a heap of bytes in the database.
 
@@ -134,12 +130,33 @@ Also means column is not insertable, e.g. @Column(insertable = false)
 
 @ColumnDefault 
 Sets the default value of the column when Hibernate exports and generates the SQL schema DDL.
+Does not make column no-nullable.
+
+@Temporal(TemporalType.TIMESTAMP)
+Timestamps are frequently automatically generated values, either by the database, or by the application. 
+The JPA specification requires that you annotate temporal properties with @Temporal to declare the 
+accuracy of the SQL data type of the mapped column. The Java temporal types are java.util.Date,
+java.util.Calendar, java.sql.Date, java.sql.Time, and java.sql.Timestamp.
+Hibernate also supports java.time package available in JDK 8. Hibernate defaults to TIMESTAMP.  
+The annotation isn’t required if a converter is applied or applicable for the property.
+
+@CreationTimestamp
+Included into INSERT, column is updatable, nullable. Value set in constructor is overriden.
+The property value will be set to the current VM date exactly once when saving for the first time. 
+
+@UpdateTimestamp
+Included into INSERT/UPDATE, column is updatable, nullable.
+On INSERT has the same value as CreationTimestamp. 
+The property value will be set to the current VM date whenever the owning entity is updated. 
+
+You can also write and configure custom value generators, running in the application or database. 
+Have a look at org.hibernate.annotations.GeneratorType and ValueGenerationType.
+
+@Enumerated
+By default, Hibernate would store the ORDINAL position of the value.
+The EnumType.STRING option is a better choice; Hibernate stores the label of the enum value as is.
 
 
-
-Timestamps are frequently automatically generated values, either by the database,
-as in the previous example, or by the application. Let’s have a closer look at the
-@Temporal annotation you saw in listing 5.4.
 
 
 

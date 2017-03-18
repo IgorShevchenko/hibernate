@@ -16,6 +16,8 @@ import javax.transaction.UserTransaction;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.engine.spi.SessionImplementor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Every interaction with your database should occur within explicit transaction
@@ -34,6 +36,7 @@ import org.hibernate.engine.spi.SessionImplementor;
  */
 public class DbTestClient implements Closeable {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(DbTestClient.class);
 	private final TransactionManager tm;
 
 	/**
@@ -97,7 +100,11 @@ public class DbTestClient implements Closeable {
 			consumer.accept(em);
 
 			tx.commit();
+			LOGGER.info("=== transaction finished === ");
 			em.close();
+		} catch (Exception e) {
+			LOGGER.info("=== received exception === ");
+			throw e;
 		} finally {
 			TransactionManager.rollback(tx);
 		}
@@ -145,14 +152,18 @@ public class DbTestClient implements Closeable {
 			T entity = query.getSingleResult();
 
 			tx.commit();
+			LOGGER.info("=== transaction finished === ");
 			em.close();
 
 			return entity;
+		} catch (Exception e) {
+			LOGGER.info("=== received exception === ");
+			throw e;
 		} finally {
 			TransactionManager.rollback();
 		}
 	}
-	
+
 	public <T> T find(Class<T> entityClass, Object id) throws Exception {
 		try {
 			UserTransaction tx = this.tm.getUserTransaction();
@@ -163,9 +174,13 @@ public class DbTestClient implements Closeable {
 			T entity = em.find(entityClass, id);
 
 			tx.commit();
+			LOGGER.info("=== transaction finished === ");
 			em.close();
 
 			return entity;
+		} catch (Exception e) {
+			LOGGER.info("=== received exception === ");
+			throw e;
 		} finally {
 			TransactionManager.rollback();
 		}
@@ -191,9 +206,13 @@ public class DbTestClient implements Closeable {
 			List<T> entities = em.createQuery(qlString, entityClass).getResultList();
 
 			tx.commit();
+			LOGGER.info("=== transaction finished === ");
 			em.close();
 
 			return entities;
+		} catch (Exception e) {
+			LOGGER.info("=== received exception === ");
+			throw e;
 		} finally {
 			TransactionManager.rollback();
 		}
@@ -219,9 +238,13 @@ public class DbTestClient implements Closeable {
 			List<T> entities = em.createNamedQuery(namedQuey, entityClass).getResultList();
 
 			tx.commit();
+			LOGGER.info("=== transaction finished === ");
 			em.close();
 
 			return entities;
+		} catch (Exception e) {
+			LOGGER.info("=== received exception === ");
+			throw e;
 		} finally {
 			TransactionManager.rollback();
 		}
@@ -239,9 +262,13 @@ public class DbTestClient implements Closeable {
 			List<T> entities = query.getResultList();
 
 			tx.commit();
+			LOGGER.info("=== transaction finished === ");
 			em.close();
 
 			return entities;
+		} catch (Exception e) {
+			LOGGER.info("=== received exception === ");
+			throw e;
 		} finally {
 			TransactionManager.rollback();
 		}

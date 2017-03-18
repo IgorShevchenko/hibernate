@@ -3,6 +3,8 @@ package com.igor.chapter_3;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -32,7 +34,11 @@ public class User implements Serializable {
 	protected String username;
 
 	// The Address is @Embeddable, no annotation needed here
+	// Hibernate detects that the Address class is annotated with @Embeddable
 	@Embedded
+	// Can specify access strategy here, if embedded class does not specify it
+	// Here is ignored, as embedded class specifies @Access(AccessType.FIELD)
+	@Access(AccessType.PROPERTY)
 	protected Address homeAddress;
 
 	// There should be another way?
@@ -69,7 +75,16 @@ public class User implements Serializable {
 		this.homeAddress = homeAddress;
 	}
 
+	/*
+	 * Consider what would happen if all embedded fields are NULLs. Hibernate
+	 * returns a null in this case. Hibernate also stores a null embedded
+	 * property as NULL values in all mapped columns of the component.
+	 * Consequently, if you store a User with an empty Address (you have an
+	 * Address instance but all its properties are null), no Address instance
+	 * will be returned when you load the User.
+	 */
 	public Address getBillingAddress() {
+		// Document that will return null, not an instance with all null fields
 		return billingAddress;
 	}
 

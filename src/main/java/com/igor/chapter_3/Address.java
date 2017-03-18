@@ -2,22 +2,30 @@ package com.igor.chapter_3;
 
 import java.io.Serializable;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 
 /**
  * Instead of <code>@Entity</code>, this component POJO is marked with
- * <code>@Embeddable</code>. It has no identifier property.
+ * <code>@Embeddable</code>. It has no identifier property. Inherits the default
+ * or explicitly declared access strategy of its owning root entity class.
  */
 @Embeddable
+// Can specify access strategy
+// Hibernate will use the specified strategy for reading mapping 
+// annotations on the embeddable class and runtime access.
+@Access(AccessType.FIELD)
 public class Address implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	// @NotNull is ignored for DDL generation here!
-	// @Column(nullable = false) used for DDL generation!
+	// @NotNull is ignored for DDL generation here (old bug)!
+	// Will be used at runtime, for Bean Validation 
 	@NotNull
+	// Used for DDL generation
 	@Column(nullable = false, name = "street_2")
 	protected String street;
 
@@ -48,6 +56,8 @@ public class Address implements Serializable {
 		this.city = city;
 	}
 
+	// Ignored, as will always use @Access(AccessType.FIELD)
+	// @Column(nullable = false, name = "street_3")
 	public String getStreet() {
 		return street;
 	}

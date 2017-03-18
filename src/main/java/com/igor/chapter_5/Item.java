@@ -7,16 +7,22 @@ import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 // Annotations will be considered only if they placed according to access
@@ -33,9 +39,8 @@ public class Item {
 	// Three ways to declare whether a property value is required
 	// Hibernate does a null check on-save, and generates a NOT NULL constraint
 	// org.hibernate.PropertyValueException:
-	// Insert is always executed for @Basic(optional = false) and
-	// @Column(nullable = false),
-	// if bean validation is enabled. Then it relies only on @NotNull
+	// Insert is always executed for @Basic(optional = false) and @Column(nullable = false)
+	// If bean validation is enabled. Then it relies only on @NotNull
 	@NotNull
 	@Basic(optional = false)
 	@Column(nullable = false, name = "price")
@@ -58,13 +63,33 @@ public class Item {
 	// Generated to DATETIME(6)
 	// Also means column is not insertable/updatable, e.g. @Column(insertable = false, updatable = false)
 	@Generated(GenerationTime.ALWAYS)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastModified;
 
+	// Included into INSERT, column is updatable, nullable
+	@CreationTimestamp
+	// JPA-compliant
+	@Temporal(TemporalType.TIMESTAMP)
+	// Make column not-updatable
+	@Column(updatable = false)
+	private Date createdOn;
+	// Value set in constructor is overriden
+	// private Date createdOn = new Date();
+
+	// Included into INSERT/UPDATE, column is updatable, nullable
+	@UpdateTimestamp
+	private Date updatedOn;
+
 	// Lets' take default value on insert
+	// Default value is applied, still can be null
 	@ColumnDefault("10")
 	// Also means column is not insertable, e.g. @Column(insertable = false) 
 	@Generated(GenerationTime.INSERT)
 	private Integer amount;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private AuctionType auctionType = AuctionType.HIGHEST_BID;
 
 	public Integer getId() {
 		return id;
