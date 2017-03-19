@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 // Has circular dependency with Bid.
-// @Entity makes all fields/properties persistent. 
+// @Entity makes all fields/properties persistent.
 @Entity
 public class Item {
 
@@ -28,7 +28,7 @@ public class Item {
 
 	// Primary key, bigint(20)
 	@Id
-	@GeneratedValue	
+	@GeneratedValue
 	protected Long id;
 
 	// No getter/setter, still persisted, bigint(20)
@@ -87,10 +87,13 @@ public class Item {
 	}
 
 	public Date getAuctionEnd() {
-		// Immutable instance
+		// MUST do this for 2 reasons:
+		// 1) Return immutable instance
+		// 2) Loaded this.auctionEnd is java.sql.Timestamp
 		if (this.auctionEnd == null) {
 			return null;
 		} else {
+			System.out.println(this.auctionEnd.getClass());
 			return new Date(this.auctionEnd.getTime());
 		}
 	}

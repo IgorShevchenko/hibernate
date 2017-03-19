@@ -42,13 +42,16 @@ public class User implements Serializable {
 	protected Address homeAddress;
 
 	// There should be another way?
+	// You need additional columns to store another Address. 
+	// Override the column names: NULL-able overrides!
 	// @Embedded is optional annotation here
-	// NULL-able overrides!
 	@Embedded
 	@AttributeOverrides({
 			@AttributeOverride(name = "street", column = @Column(name = "BILLING_STREET")),
 			@AttributeOverride(name = "zipcode", column = @Column(name = "BILLING_ZIPCODE", length = 5)),
-			@AttributeOverride(name = "city", column = @Column(name = "BILLING_CITY"))
+			// Override nested embedded component
+			@AttributeOverride(name = "city.name", column = @Column(name = "BILLING_CITY")),
+			@AttributeOverride(name = "city.country", column = @Column(name = "BILLING_COUNTRY"))
 	})
 	protected Address billingAddress;
 

@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
@@ -14,7 +16,7 @@ import javax.validation.constraints.NotNull;
  * or explicitly declared access strategy of its owning root entity class.
  */
 @Embeddable
-// Can specify access strategy
+// Can specify access strategy.
 // Hibernate will use the specified strategy for reading mapping 
 // annotations on the embeddable class and runtime access.
 @Access(AccessType.FIELD)
@@ -29,16 +31,17 @@ public class Address implements Serializable {
 	@Column(nullable = false, name = "street_2")
 	protected String street;
 
-	// Not null, varchar(5)
-	// Defines fixed column name
+	// Must have both annotations
+	// Not null, varchar(5), defines fixed column name
 	@NotNull
 	@Column(nullable = false, length = 5, name = "zipcode_2")
 	protected String zipcode;
 
-	// Must have both annotations
 	@NotNull
-	@Column(nullable = false, name = "city_2")
-	protected String city;
+	// Override column "name" to be "city", length is defaulted here!
+	// Could move "column name" to nested column definition 
+	@AttributeOverrides({ @AttributeOverride(name = "name", column = @Column(name = "city", nullable = false)) })
+	private City city;
 
 	/**
 	 * Hibernate will call this no-argument constructor to create an instance,
@@ -50,14 +53,14 @@ public class Address implements Serializable {
 	/**
 	 * You can have additional (public) constructors for convenience.
 	 */
-	public Address(String street, String zipcode, String city) {
+	public Address(String street, String zipcode, City city) {
 		this.street = street;
 		this.zipcode = zipcode;
 		this.city = city;
 	}
 
 	// Ignored, as will always use @Access(AccessType.FIELD)
-	// @Column(nullable = false, name = "street_3")
+	@Column(nullable = false, name = "street_3")
 	public String getStreet() {
 		return street;
 	}
@@ -74,11 +77,12 @@ public class Address implements Serializable {
 		this.zipcode = zipcode;
 	}
 
-	public String getCity() {
+	public City getCity() {
 		return city;
 	}
 
-	public void setCity(String city) {
+	public void setCity(City city) {
 		this.city = city;
 	}
+
 }

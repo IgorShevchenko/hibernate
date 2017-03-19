@@ -3,6 +3,7 @@ package com.igor.chapter_3;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 import javax.transaction.RollbackException;
 
 import org.assertj.core.api.Assertions;
@@ -20,13 +21,15 @@ public class UserTest {
 
 		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT);
 
+		City homeCity = new City("Home city", "Home country");
+		City billingCity = new City("Work city", "Work country");
+
+		Address homeAddress = new Address("Home street", "11111", homeCity);
+		Address billingAddress = new Address("Work street", "22222", billingCity);
+
 		User user = new User();
 		user.setUsername("Igor");
-
-		Address homeAddress = new Address("Home street", "11111", "Home city");
 		user.setHomeAddress(homeAddress);
-
-		Address billingAddress = new Address("Work street", "22222", "Work city");
 		user.setBillingAddress(billingAddress);
 
 		// Save user to the database
@@ -42,7 +45,20 @@ public class UserTest {
 		User userDb = usersDb.get(0);
 
 		Assertions.assertThat(userDb).isEqualToComparingFieldByFieldRecursively(user);
-		Assertions.assertThat(userDb.getBillingAddress().getCity()).isEqualTo(billingAddress.getCity());
+		Assertions.assertThat(userDb.getBillingAddress().getCity().getName()).isEqualTo(billingCity.getName());
+
+		// Retrieve property of the embedded component by query
+		client.executeTransaction(em -> {
+
+			// Nested access: u.homeAddress.city.name
+			// Though city.name is stored in "city"
+			String qlQuery = "SELECT u.homeAddress.city.name FROM User u WHERE u.id = :id";
+			TypedQuery<String> query = em.createQuery(qlQuery, String.class);
+			query.setParameter("id", user.getId());
+			String cityName = query.getSingleResult();
+
+			Assertions.assertThat(cityName).isEqualTo(homeCity.getName());
+		});
 
 		client.close();
 	}
@@ -52,15 +68,17 @@ public class UserTest {
 
 		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT);
 
-		User user = new User();
-		user.setUsername("Igor");
-
-		// Home address can'tbe null
-		Address homeAddress = new Address("Home street", "11111", "Home city");
-		user.setHomeAddress(homeAddress);
+		// Home address can't be null
+		City homeCity = new City("Home city", "Home country");
+		Address homeAddress = new Address("Home street", "11111", homeCity);
 
 		// Billing address is null itself -> get null
-		user.setBillingAddress(null);
+		Address billingAddress = null;
+
+		User user = new User();
+		user.setUsername("Igor");
+		user.setHomeAddress(homeAddress);
+		user.setBillingAddress(billingAddress);
 
 		client.persist(user);
 
@@ -79,22 +97,23 @@ public class UserTest {
 
 		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT);
 
-		User user = new User();
-		user.setUsername("Igor");
-
-		// Home address can'tbe null
-		Address homeAddress = new Address("Home street", "11111", "Home city");
-		user.setHomeAddress(homeAddress);
+		// Home address can't be null
+		City homeCity = new City("Home city", "Home country");
+		Address homeAddress = new Address("Home street", "11111", homeCity);
 
 		// Billing address is not null, but fields are nulls -> get null
 		Address billingAddress = new Address(null, null, null);
+
+		User user = new User();
+		user.setUsername("Igor");
+		user.setHomeAddress(homeAddress);
 		user.setBillingAddress(billingAddress);
 
 		client.persist(user);
 
 		// On a user billing address is not null
 		Assertions.assertThat(user.getBillingAddress()).isNotNull();
-		
+
 		User userDb = client.find(User.class, user.getId());
 
 		// Assertion
@@ -107,7 +126,7 @@ public class UserTest {
 
 			User userDb2 = em.find(User.class, user.getId());
 			userDb2.setBillingAddress(billingAddress);
-			
+
 			// No UPDATE is executed
 		});
 
@@ -119,14 +138,13 @@ public class UserTest {
 
 		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT);
 
-		User user = new User();
-		user.setUsername("Igor");
-
 		// Null is not allowed for the home city
 		Address homeAddress = new Address("Home street", "11111", null);
-		user.setHomeAddress(homeAddress);
-
 		Address billingAddress = new Address(null, null, null);
+
+		User user = new User();
+		user.setUsername("Igor");
+		user.setHomeAddress(homeAddress);
 		user.setBillingAddress(billingAddress);
 
 		// Save user to the database

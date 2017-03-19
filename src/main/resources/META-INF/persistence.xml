@@ -56,6 +56,10 @@
 		<class>com.igor.chapter_3.Address</class>
 		<class>com.igor.chapter_3.User</class>
 		<class>com.igor.chapter_3.UserName</class>
+		
+		<!-- Don't need to include embeddabe component here -->
+		<!-- <class>com.igor.chapter_3.City</class> -->
+		
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />

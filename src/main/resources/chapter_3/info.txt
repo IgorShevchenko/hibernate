@@ -28,4 +28,18 @@ Annotate the class of the property as @Embeddable, or map the property itself as
 In this case class will still work, only column annotations will be ignored, 
 and default values will be applied.
 
+The @Embedded annotation is useful if you want to map a third-party component class 
+without source and no annotations, but using the right getter/setter methods.
+Improve reusability, and make it more finegrained, by nesting embedded components.
+
+The @AttributeOverrides selectively overrides property mappings of the embedded class.
+Is "complete": any JPA or Hibernate annotation on the overridden property is ignored. 
+Bean Validation still recognizes the @NotNull annotation on the component property,
+though; Hibernate only overrides persistence annotations.
+You can declare @AttributeOverrides at any level.
+Nested properties can be referenced with dot notation: for example, on User#address, 
+@AttributeOveride(name = "city.name") references the Address#City#name attribute.
+
+// TODO:
+You can even map collections of components or have references from a component to an entity.
 
