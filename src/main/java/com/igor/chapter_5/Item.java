@@ -1,5 +1,6 @@
 package com.igor.chapter_5;
 
+import java.sql.Blob;
 import java.util.Date;
 
 import javax.persistence.Access;
@@ -9,9 +10,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -19,6 +22,8 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
@@ -54,14 +59,16 @@ public class Item {
 	private Integer bidCount;
 
 	@Column(name = "weight_pounds")
-	// Executed in the database on SELECT / INSERT / UPDATE
+	// Executed in the database on SELECT / INSERT / UPDATE / WHERE clause
 	@ColumnTransformer(read = "weight_pounds * 2", write = "? / 2")
 	private double weight;
 
 	// Maintained by database trigger
-	// Select is executed on every INSERT/UPDATE to get generated value for every generated property
+	// Select is executed on every INSERT/UPDATE to get generated value for
+	// every generated property
 	// Generated to DATETIME(6)
-	// Also means column is not insertable/updatable, e.g. @Column(insertable = false, updatable = false)
+	// Also means column is not insertable/updatable, e.g. @Column(insertable =
+	// false, updatable = false)
 	@Generated(GenerationTime.ALWAYS)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastModified;
@@ -83,13 +90,34 @@ public class Item {
 	// Lets' take default value on insert
 	// Default value is applied, still can be null
 	@ColumnDefault("10")
-	// Also means column is not insertable, e.g. @Column(insertable = false) 
+	// Also means column is not insertable, e.g. @Column(insertable = false)
 	@Generated(GenerationTime.INSERT)
 	private Integer amount;
 
 	@Enumerated(EnumType.STRING)
+	@Basic(fetch = FetchType.LAZY)
 	@Column(nullable = false)
 	private AuctionType auctionType = AuctionType.HIGHEST_BID;
+
+	// Tells to maps to BLOB in the database
+	// Database column: longblob by default, or blob
+	@Lob
+	// Lazy loading on a field requires buildtime bytecode instrumentation
+	@Basic(fetch = FetchType.LAZY)
+	@Fetch(FetchMode.SELECT)
+	@Column(name = "IMAGE", columnDefinition = "BLOB NOT NULL")
+	private byte[] imageBytesLob;
+
+	// Lazy loading on a field requires buildtime bytecode instrumentation
+	@Basic(fetch = FetchType.LAZY)
+	@Fetch(FetchMode.SELECT)
+	// Database column: mediumblob
+	// 128 kilobyte maximum for the picture
+	@Column(length = 131072)
+	private byte[] imageBytes;
+	
+	@Lob
+	private Blob imageBlob;
 
 	public Integer getId() {
 		return id;
@@ -121,6 +149,38 @@ public class Item {
 
 	public void setAmount(Integer amount) {
 		this.amount = amount;
+	}
+
+	public AuctionType getAuctionType() {
+		return auctionType;
+	}
+
+	public void setAuctionType(AuctionType auctionType) {
+		this.auctionType = auctionType;
+	}
+
+	public byte[] getImageBytesLob() {
+		return imageBytesLob;
+	}
+
+	public void setImageBytesLob(byte[] imageBytesLob) {
+		this.imageBytesLob = imageBytesLob;
+	}
+
+	public byte[] getImageBytes() {
+		return imageBytes;
+	}
+
+	public void setImageBytes(byte[] imageBytes) {
+		this.imageBytes = imageBytes;
+	}
+
+	public Blob getImageBlob() {
+		return imageBlob;
+	}
+
+	public void setImageBlob(Blob imageBlob) {
+		this.imageBlob = imageBlob;
 	}
 
 }

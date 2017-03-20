@@ -58,4 +58,7 @@ SHOW VARIABLES LIKE "general_log%";
 @UpdateTimestamp
 @Version
 
+@Lob
+@Fetch
+
 

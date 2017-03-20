@@ -23,7 +23,9 @@ All of entity (or embeddable type) 's properties are considered persistent by de
 Hibernate loads and stores the value of the property in a column with an appropriate SQL type and the same name as the property.
 
 Otherwise, if the type of the property is java.io.Serializable, its value is stored in its serialized form. 
-This typically isn’t what you want, and you should always map Java classes instead of storing a heap of bytes in the database.
+This typically isn’t what you want, and you should always map Java classes instead of storing a heap of bytes.
+This mapping converts the value of the property to a byte stream stored in a VARBINARY column. 
+Serialization and deserialization occur when the owning entity instance is stored and loaded.
 
 Otherwise, Hibernate will throw an exception on startup, complaining that it doesn’t understand the type of the property.
 This configuration by exception approach means you don’t have to annotate a property to
@@ -163,7 +165,7 @@ Standard converters/mapper names: integer, long, short, float, double, byte, boo
 big_decimal, big_integer, string, character (char[], Character[], java.lang.String),
 yes_no, true_false, class, locale, timezone, currency, date, time, timestamp, calendar,
 calendar_date, duration, instant, localdatetime, localdate, localtime, offsetdatetime,
-offsettime, zoneddatetime. 
+offsettime, zoneddatetime, binary, text, clob, blolb, serializable. 
 
 Hibernate’s behavior for java.util.Date properties might surprise you at first:
 when you store a java.util.Date, Hibernate won’t return a java.util.Date after
@@ -202,12 +204,31 @@ default character set for your entire database, or at least whole tables. This i
 setting. If you need more fine-grained control and want to switch to NVARCHAR,
 NCHAR, or NCLOB column types, annotate your property mapping with @org.hibernate.annotations.Nationalized
 
+Hibernate initializes the property value right away, when the entity instance is loaded.
+Inconvenient for potentially large values. 
 
+@Lob
+This maps the byte[] to an SQL BLOB data type and the String to a CLOB. 
+From Javadoc, to get lazy loading: 
+@Lob @Basic(fetch=LAZY) @Column(name="EMP_PIC", columnDefinition="BLOB NOT NULL")
+protected byte[] pic;
+Lazy attribute fetching: an attribute or single valued association is fetched when the instance variable is accessed. 
+This approach requires buildtime bytecode instrumentation and is rarely necessary. Disabled by default.
 
+Alternatively, use java.sql.Clob or java.sql.Blob, you get lazy loading without bytecode instrumentation. 
+JDBC supports locator objects (LOBs) directly. @Lob protected java.sql.Blob imageBlob; 
+These JDBC classes include behavior to load values on demand. When the owning
+entity instance is loaded, the property value is a placeholder, and the real value isn’t
+immediately materialized. The downside is that your domain model is then bound to JDBC.
 
+A java.lang.String property is mapped to an SQL VARCHAR column, and the same for char[] and Character[]. 
+As we’ve discussed, some dialects register different native types depending on declared length.
 
+To create and set a Blob or Clob value, Hibernate offers some convenience methods.
+Session session = em.unwrap(Session.class);
+Blob blob = session.getLobHelper().createBlob(imageInputStream, byteLength);
 
-
+Hibernate will pick the right type adapter depending on the Java type of your property.
 
 
 

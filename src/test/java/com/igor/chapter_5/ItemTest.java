@@ -1,5 +1,7 @@
 package com.igor.chapter_5;
 
+import java.util.Random;
+
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -192,7 +194,7 @@ public class ItemTest {
 
 			Item itemDb = em.find(Item.class, item.getId());
 			itemDb.setWeight(200);
-			
+
 			// Has default value, still nullable
 			itemDb.setAmount(null);
 
@@ -200,6 +202,41 @@ public class ItemTest {
 			// 1) Get item
 			// 2) Dirty state updated. Generated values are not in UPDATE
 			// 3) Generated values are retrieved
+		});
+
+		client.close();
+	}
+
+	@Test
+	public void shouldStoreAsBlobLazy() throws Exception {
+
+		DbTestClient client = new DbTestClient(PERSISTENCE_UNIT);
+
+		// Generate image
+		byte[] image = new byte[1024];
+		new Random().nextBytes(image);
+
+		Item item = new Item();
+		item.setInitialPrice(10.0);
+		item.setWeight(10);
+		item.setImageBytesLob(image);
+		item.setImageBytes(image);
+
+		client.persist(item);
+		// BLOLB is in the INSERT
+
+		client.executeTransaction(em -> {
+
+			Item itemDb = em.find(Item.class, item.getId());
+			// byte[]-@Lob-Lazy and byte[]-Lazy are in the SELECT
+			// Lazy loading does not work without bytecode instrumentation
+
+			byte[] imageDb1 = itemDb.getImageBytesLob();
+			byte[] imageDb2 = itemDb.getImageBytes();
+
+			System.out.println(imageDb1.length);
+			System.out.println(imageDb2.length);
+
 		});
 
 		client.close();
