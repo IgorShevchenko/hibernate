@@ -230,8 +230,55 @@ Blob blob = session.getLobHelper().createBlob(imageInputStream, byteLength);
 
 Hibernate will pick the right type adapter depending on the Java type of your property.
 
+@Type
+Explicitly select a particular adapter. 
+You can also override an adapter globally in the Hibernate boot configuration with a custom user type:
+metaBuilder.applyBasicType(new MyUserType(), new String[]{"date"});
+This setting will override the built-in date type adapter and delegate value conversion
+for java.util.Date properties to your custom implementation.
 
 
+
+
+
+
+This value-typed class should be java.io.Serializable: when Hibernate stores entity
+instance data in the shared second-level cache (see section 20.2), it disassembles the
+entity’s state. If an entity has a MonetaryAmount property, the serialized representation
+of the property value is stored in the second-level cache region. When entity data is
+retrieved from the cache region, the property value is deserialized and reassembled.
+
+@Converter
+A converter has to implement the AttributeConverter interface; the two type arguments
+are the type of the Java property and the type in the database schema. The Java
+type is MonetaryAmount, and the database type is String, which maps, as usual, to an
+SQL VARCHAR. You must annotate the class with @Converter or declare it as such in the
+orm.xml metadata. With autoApply enabled, any MonetaryAmount property in your
+domain model, be it of an entity or an embeddable class, without further mapping will
+now be handled by this converter automatically.
+
+Converters aren’t limited to custom classes: you can even override Hibernate’s
+built-in type adapters. For example, you could create a custom converter for some or
+even all java.util.Date properties in your domain model.
+You can also apply them to properties of embeddable classes.
+
+With a custom converter you can take care of inheritance.
+The abstract Zipcode class has two concrete subclasses.
+
+@Convert 
+The annotation is optional: apply it to override or disable a converter for a particular property.
+Apply converter on attribute, or embedded class, or nested embedded class through entity.
+The attributeName declares the attribute of the embeddable class. This setting supports a dot syntax for 
+the attribute path; if zipcode isn’t a property of the Address class but is a property of a nested 
+embeddable City class, reference it with city.zipcode, its nested path.
+
+You can also apply converters to values of collections and maps, if their values and/or keys 
+are of basic or embeddable type. For example, on a persistent Set<Zipcode>.
+Can apply converter on a set/collections/etc.
+
+@Converts
+If several @Convert annotations are required on a single embedded property, to
+convert several attributes of embedded property, for example, you can group them.
 
 
 

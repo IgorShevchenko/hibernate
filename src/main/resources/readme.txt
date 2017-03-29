@@ -46,7 +46,7 @@ SHOW VARIABLES LIKE "general_log%";
 @MappedSuperclass 
 @NamedQueries
 @NamedQuery
-@NotNull 
+@NotNull
 @Parameter
 @SelectBeforeUpdate
 @Size
@@ -60,5 +60,9 @@ SHOW VARIABLES LIKE "general_log%";
 
 @Lob
 @Fetch
-
+@Type
+@Converter
+@Convert
+@Converts
+@ElementCollection
 

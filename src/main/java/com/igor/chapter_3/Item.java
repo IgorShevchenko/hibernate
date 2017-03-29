@@ -90,6 +90,7 @@ public class Item {
 		// MUST do this for 2 reasons:
 		// 1) Return immutable instance
 		// 2) Loaded this.auctionEnd is java.sql.Timestamp
+		// Can also define a custom converter
 		if (this.auctionEnd == null) {
 			return null;
 		} else {
